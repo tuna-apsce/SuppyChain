@@ -329,30 +329,6 @@ Dự án này được phân phối dưới giấy phép MIT. Xem file `LICENSE`
 
 - **Email**: nguyenanhtu10203@gmail.com
 - **Phone**: 0339010737
-
-## Changelog
-
-### Version 1.0.0
-- Triển khai ban đầu
-- Hỗ trợ đầy đủ chuỗi cung ứng nông nghiệp
-- Tích hợp blockchain và IPFS
-- Giao diện responsive
-- Hỗ trợ đa vai trò người dùng
-
-## Roadmap
-
-### Version 1.1.0
-- [ ] Hỗ trợ đa ngôn ngữ
-- [ ] Mobile app (React Native)
-- [ ] Analytics dashboard
-- [ ] API RESTful
-
-### Version 1.2.0
-- [ ] Machine Learning cho dự đoán chất lượng
-- [ ] IoT sensor integration
-- [ ] Advanced reporting
-- [ ] Multi-chain support
-
 ---
 
 **AgriTrace** - Minh bạch từ trang trại đến bàn ăn 🌱
