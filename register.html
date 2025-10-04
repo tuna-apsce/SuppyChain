@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration - AgriTrace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #28a745 0%, #ffc107 100%);
+            color: white;
+            padding: 60px 0;
+        }
+        .role-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .role-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .role-card.selected {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        .registration-form {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        .step.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .step.completed {
+            background-color: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-seedling me-2"></i>AgriTrace
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-home me-1"></i>Home
+                </a>
+                <button class="btn btn-outline-light ms-2" id="connectWalletBtn">
+                    <i class="fas fa-wallet me-1"></i>Connect Wallet
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 mb-4">
+                <i class="fas fa-user-plus me-3"></i>Join AgriTrace
+            </h1>
+            <p class="lead">Register to become part of the agricultural supply chain network</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step" id="step1">1</div>
+            <div class="step" id="step2">2</div>
+            <div class="step" id="step3">3</div>
+        </div>
+
+        <!-- Step 1: Connect Wallet -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="registration-form" id="step1Form">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-wallet fa-3x text-primary mb-3"></i>
+                        <h3>Step 1: Connect Your Wallet</h3>
+                        <p class="text-muted">Connect your MetaMask wallet to start the registration process</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button class="btn btn-primary btn-lg" id="connectWalletBtnMain">
+                            <i class="fas fa-wallet me-2"></i>Connect MetaMask Wallet
+                        </button>
+                    </div>
+                    
+                    <div class="mt-4" id="walletStatus">
+                        <!-- Wallet connection status will be shown here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Choose Role -->
+        <div class="row justify-content-center" id="step2Form" style="display: none;">
+            <div class="col-lg-10">
+                <div class="registration-form">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-users-cog fa-3x text-primary mb-3"></i>
+                        <h3>Step 2: Choose Your Role</h3>
+                        <p class="text-muted">Select the role that best describes your position in the supply chain</p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card role-card h-100" data-role="FARMER">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-seedling fa-3x text-success mb-3"></i>
+                                    <h5 class="card-title">Farmer</h5>
+                                    <p class="card-text">Grow and harvest agricultural products</p>
+                                    <div class="role-description">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Creates products, adds harvest events, manages batches
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card role-card h-100" data-role="PROCESSOR">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-industry fa-3x text-primary mb-3"></i>
+                                    <h5 class="card-title">Processor</h5>
+                                    <p class="card-text">Process and package agricultural products</p>
+                                    <div class="role-description">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Processes raw materials, adds processing events
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card role-card h-100" data-role="TRANSPORTER">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-truck fa-3x text-warning mb-3"></i>
+                                    <h5 class="card-title">Transporter</h5>
+                                    <p class="card-text">Transport products between locations</p>
+                                    <div class="role-description">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Handles logistics, adds transportation events
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card role-card h-100" data-role="WAREHOUSE">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-warehouse fa-3x text-info mb-3"></i>
+                                    <h5 class="card-title">Warehouse</h5>
+                                    <p class="card-text">Store and manage inventory</p>
+                                    <div class="role-description">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Manages storage, adds warehouse events
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card role-card h-100" data-role="RETAILER">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-store fa-3x text-secondary mb-3"></i>
+                                    <h5 class="card-title">Retailer</h5>
+                                    <p class="card-text">Sell products to consumers</p>
+                                    <div class="role-description">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Final seller, adds retail events
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card role-card h-100" data-role="CONSUMER">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-shopping-cart fa-3x text-dark mb-3"></i>
+                                    <h5 class="card-title">Consumer</h5>
+                                    <p class="card-text">Purchase and consume products</p>
+                                    <div class="role-description">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            End consumer, scans QR codes for traceability
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <button class="btn btn-success btn-lg" id="proceedToStep3" disabled>
+                            <i class="fas fa-arrow-right me-2"></i>Continue to Company Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Company Details -->
+        <div class="row justify-content-center" id="step3Form" style="display: none;">
+            <div class="col-lg-8">
+                <div class="registration-form">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-building fa-3x text-primary mb-3"></i>
+                        <h3>Step 3: Company Information</h3>
+                        <p class="text-muted">Provide your company details for registration</p>
+                    </div>
+                    
+                    <form id="companyForm">
+                        <div class="mb-4">
+                            <label for="companyName" class="form-label">
+                                <i class="fas fa-building me-2"></i>Company Name *
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="companyName" 
+                                   placeholder="Enter your company name" required>
+                            <div class="form-text">This will be visible to other users in the network</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="selectedRole" class="form-label">
+                                <i class="fas fa-users-cog me-2"></i>Selected Role
+                            </label>
+                            <input type="text" class="form-control" id="selectedRole" readonly>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="contactEmail" class="form-label">
+                                <i class="fas fa-envelope me-2"></i>Contact Email (Optional)
+                            </label>
+                            <input type="email" class="form-control form-control-lg" id="contactEmail" 
+                                   placeholder="your.email@company.com">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="companyDescription" class="form-label">
+                                <i class="fas fa-info-circle me-2"></i>Company Description (Optional)
+                            </label>
+                            <textarea class="form-control" id="companyDescription" rows="3" 
+                                      placeholder="Brief description of your company..."></textarea>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Important:</strong> After registration, you'll need admin approval to access full features. 
+                            This process may take 1-2 business days.
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="button" class="btn btn-outline-secondary me-3" id="backToStep2">
+                                <i class="fas fa-arrow-left me-2"></i>Back
+                            </button>
+                            <button type="submit" class="btn btn-success btn-lg" id="submitRegistration">
+                                <i class="fas fa-user-plus me-2"></i>Register Now
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div class="row justify-content-center" id="successMessage" style="display: none;">
+            <div class="col-lg-8">
+                <div class="registration-form text-center">
+                    <i class="fas fa-check-circle fa-5x text-success mb-4"></i>
+                    <h3 class="text-success">Registration Successful!</h3>
+                    <p class="lead">Your registration has been submitted to the blockchain.</p>
+                    
+                    <div class="alert alert-success">
+                        <h5><i class="fas fa-clock me-2"></i>Next Steps:</h5>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="fas fa-check me-2 text-success"></i>Your registration is pending admin approval</li>
+                            <li><i class="fas fa-check me-2 text-success"></i>You'll receive notification once approved</li>
+                            <li><i class="fas fa-check me-2 text-success"></i>You can access your dashboard after approval</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="index.html" class="btn btn-primary me-3">
+                            <i class="fas fa-home me-2"></i>Return to Home
+                        </a>
+                        <a href="dashboard/admin.html" class="btn btn-outline-primary">
+                            <i class="fas fa-users-cog me-2"></i>Admin Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="fas fa-info-circle text-primary me-2"></i>
+                <strong class="me-auto">AgriTrace</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                <!-- Toast message will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/web3.min.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/blockchain.js"></script>
+    <script src="assets/js/ipfs.js"></script>
+    <script src="assets/js/app.js"></script>
+    
+    <script>
+        class RegistrationManager {
+            constructor() {
+                this.currentStep = 1;
+                this.selectedRole = null;
+                this.blockchainService = new BlockchainService();
+                this.app = new AgriTraceApp();
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.updateStepIndicator();
+            }
+
+            setupEventListeners() {
+                // Connect wallet buttons
+                document.getElementById('connectWalletBtn').addEventListener('click', () => this.connectWallet());
+                document.getElementById('connectWalletBtnMain').addEventListener('click', () => this.connectWallet());
+
+                // Role selection
+                document.querySelectorAll('.role-card').forEach(card => {
+                    card.addEventListener('click', () => this.selectRole(card));
+                });
+
+                // Navigation buttons
+                document.getElementById('proceedToStep3').addEventListener('click', () => this.goToStep(3));
+                document.getElementById('backToStep2').addEventListener('click', () => this.goToStep(2));
+                document.getElementById('companyForm').addEventListener('submit', (e) => this.submitRegistration(e));
+            }
+
+            async connectWallet() {
+                try {
+                    AgriTraceUtils.showToast('Connecting wallet...', 'info');
+                    await this.blockchainService.connectWallet();
+                    
+                    const account = this.blockchainService.getCurrentAccount();
+                    const networkHealth = await this.blockchainService.checkNetworkHealth();
+                    
+                    // Check if user is already registered
+                    const isRegistered = await this.blockchainService.isUserRegistered();
+                    
+                    if (isRegistered) {
+                        const user = await this.blockchainService.getCurrentUser();
+                        this.showWalletStatus(account, true, user);
+                        AgriTraceUtils.showToast('You are already registered!', 'success');
+                        return;
+                    }
+                    
+                    this.showWalletStatus(account, false);
+                    this.goToStep(2);
+                    AgriTraceUtils.showToast('Wallet connected successfully!', 'success');
+                    
+                } catch (error) {
+                    console.error('Error connecting wallet:', error);
+                    AgriTraceUtils.showToast(`Connection failed: ${error.message}`, 'error');
+                }
+            }
+
+            showWalletStatus(account, isRegistered, user = null) {
+                const walletStatus = document.getElementById('walletStatus');
+                
+                if (isRegistered && user) {
+                    walletStatus.innerHTML = `
+                        <div class="alert alert-success">
+                            <h6><i class="fas fa-check-circle me-2"></i>Already Registered</h6>
+                            <p class="mb-1"><strong>Account:</strong> ${account}</p>
+                            <p class="mb-1"><strong>Role:</strong> ${user.role}</p>
+                            <p class="mb-0"><strong>Company:</strong> ${user.companyName}</p>
+                        </div>
+                    `;
+                } else {
+                    walletStatus.innerHTML = `
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-wallet me-2"></i>Wallet Connected</h6>
+                            <p class="mb-1"><strong>Account:</strong> ${account}</p>
+                            <p class="mb-0"><strong>Status:</strong> Ready for registration</p>
+                        </div>
+                    `;
+                }
+            }
+
+            selectRole(card) {
+                // Remove previous selection
+                document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+                
+                // Add selection to clicked card
+                card.classList.add('selected');
+                
+                // Store selected role
+                this.selectedRole = card.dataset.role;
+                
+                // Update form
+                document.getElementById('selectedRole').value = this.selectedRole;
+                
+                // Enable continue button
+                document.getElementById('proceedToStep3').disabled = false;
+                
+                AgriTraceUtils.showToast(`Selected role: ${this.selectedRole}`, 'info');
+            }
+
+            goToStep(step) {
+                // Hide all forms
+                document.getElementById('step1Form').style.display = 'none';
+                document.getElementById('step2Form').style.display = 'none';
+                document.getElementById('step3Form').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'none';
+                
+                // Show current form
+                if (step === 1) {
+                    document.getElementById('step1Form').style.display = 'block';
+                } else if (step === 2) {
+                    document.getElementById('step2Form').style.display = 'block';
+                } else if (step === 3) {
+                    document.getElementById('step3Form').style.display = 'block';
+                } else if (step === 4) {
+                    document.getElementById('successMessage').style.display = 'block';
+                }
+                
+                this.currentStep = step;
+                this.updateStepIndicator();
+            }
+
+            updateStepIndicator() {
+                document.querySelectorAll('.step').forEach((step, index) => {
+                    step.classList.remove('active', 'completed');
+                    
+                    if (index + 1 < this.currentStep) {
+                        step.classList.add('completed');
+                    } else if (index + 1 === this.currentStep) {
+                        step.classList.add('active');
+                    }
+                });
+            }
+
+            async submitRegistration(e) {
+                e.preventDefault();
+                
+                try {
+                    const companyName = document.getElementById('companyName').value.trim();
+                    
+                    if (!companyName) {
+                        AgriTraceUtils.showToast('Company name is required', 'warning');
+                        return;
+                    }
+                    
+                    if (!this.selectedRole) {
+                        AgriTraceUtils.showToast('Please select a role', 'warning');
+                        return;
+                    }
+                    
+                    AgriTraceUtils.showToast('Submitting registration...', 'info');
+                    
+                    // Submit to blockchain
+                    const tx = await this.blockchainService.registerUser(this.selectedRole, companyName);
+                    
+                    console.log('Registration transaction:', tx);
+                    
+                    // Show success
+                    this.goToStep(4);
+                    AgriTraceUtils.showToast('Registration successful!', 'success');
+                    
+                } catch (error) {
+                    console.error('Error submitting registration:', error);
+                    AgriTraceUtils.showToast(`Registration failed: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // Initialize registration manager
+        document.addEventListener('DOMContentLoaded', () => {
+            new RegistrationManager();
+        });
+    </script>
+</body>
+</html>

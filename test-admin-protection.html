@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Protection Test - AgriTrace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+            padding: 40px 0;
+        }
+        .test-result {
+            border-left: 4px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        .test-result.pass {
+            border-left-color: #28a745;
+            background-color: #f8fff8;
+        }
+        .test-result.fail {
+            border-left-color: #dc3545;
+            background-color: #fff8f8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-seedling me-2"></i>Admin Protection Test
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-home me-1"></i>Home
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-5 mb-3">
+                <i class="fas fa-shield-alt fa-3x mb-3"></i><br>
+                Admin Protection Test
+            </h1>
+            <p class="lead">Test admin access control and protection mechanisms</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- Test Instructions -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>Test Instructions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>How to test admin protection:</h6>
+                        <ol>
+                            <li><strong>Connect Admin Wallet:</strong> Connect with the wallet that deployed the contract (admin wallet)</li>
+                            <li><strong>Test Admin Access:</strong> Should be able to access admin dashboard</li>
+                            <li><strong>Connect Non-Admin Wallet:</strong> Connect with a different wallet (non-admin)</li>
+                            <li><strong>Test Non-Admin Access:</strong> Should be denied access and redirected</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Controls -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h6><i class="fas fa-cogs me-2"></i>Test Controls</h6>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary mb-2" onclick="connectWallet()">
+                            <i class="fas fa-wallet me-1"></i>Connect Wallet
+                        </button>
+                        <br>
+                        <button class="btn btn-info mb-2" onclick="checkAdminStatus()">
+                            <i class="fas fa-user-shield me-1"></i>Check Admin Status
+                        </button>
+                        <br>
+                        <button class="btn btn-success mb-2" onclick="testAdminDashboard()">
+                            <i class="fas fa-tachometer-alt me-1"></i>Test Admin Dashboard
+                        </button>
+                        <br>
+                        <button class="btn btn-warning mb-2" onclick="clearResults()">
+                            <i class="fas fa-trash me-1"></i>Clear Results
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h6><i class="fas fa-info me-2"></i>Current Status</h6>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Wallet Connected:</strong> <span id="walletStatus" class="badge bg-secondary">No</span></p>
+                        <p><strong>Account:</strong> <span id="accountInfo">Not connected</span></p>
+                        <p><strong>Admin Status:</strong> <span id="adminStatus" class="badge bg-secondary">Unknown</span></p>
+                        <p><strong>Contract Admin:</strong> <span id="contractAdmin">Unknown</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Results -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clipboard-check me-2"></i>Test Results
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="testResults">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-play-circle fa-3x mb-3"></i>
+                                <p>Click "Test Admin Dashboard" to start testing</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="fas fa-info-circle text-primary me-2"></i>
+                <strong class="me-auto">Admin Test</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                <!-- Toast message will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/web3.min.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/blockchain.js"></script>
+    <script src="assets/js/ipfs.js"></script>
+    
+    <script>
+        let blockchainService = null;
+        let testResults = [];
+        
+        function showToast(message, type = 'info') {
+            const toastEl = document.getElementById('toast');
+            const toastBody = toastEl.querySelector('.toast-body');
+            const toastIcon = toastEl.querySelector('i');
+            
+            toastBody.textContent = message;
+            
+            const icons = {
+                'success': 'fas fa-check-circle text-success',
+                'error': 'fas fa-exclamation-circle text-danger',
+                'warning': 'fas fa-exclamation-triangle text-warning',
+                'info': 'fas fa-info-circle text-primary'
+            };
+            
+            toastIcon.className = icons[type] || icons['info'];
+            
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
+        
+        function addTestResult(testName, result, message) {
+            const timestamp = new Date().toLocaleTimeString();
+            testResults.push({
+                test: testName,
+                result: result,
+                message: message,
+                timestamp: timestamp
+            });
+            updateTestResultsDisplay();
+        }
+        
+        function updateTestResultsDisplay() {
+            const container = document.getElementById('testResults');
+            
+            if (testResults.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="fas fa-play-circle fa-3x mb-3"></i>
+                        <p>Click "Test Admin Dashboard" to start testing</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            testResults.forEach((result, index) => {
+                const resultClass = result.result ? 'pass' : 'fail';
+                const resultIcon = result.result ? 'fa-check-circle text-success' : 'fa-times-circle text-danger';
+                
+                html += `
+                    <div class="test-result ${resultClass} p-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6><i class="fas ${resultIcon} me-2"></i>${result.test}</h6>
+                                <p class="mb-1">${result.message}</p>
+                                <small class="text-muted">${result.timestamp}</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function updateStatus() {
+            if (blockchainService && blockchainService.isConnected()) {
+                const account = blockchainService.getCurrentAccount();
+                document.getElementById('walletStatus').textContent = 'Yes';
+                document.getElementById('walletStatus').className = 'badge bg-success';
+                document.getElementById('accountInfo').textContent = account.substring(0, 10) + '...';
+            } else {
+                document.getElementById('walletStatus').textContent = 'No';
+                document.getElementById('walletStatus').className = 'badge bg-danger';
+                document.getElementById('accountInfo').textContent = 'Not connected';
+            }
+        }
+        
+        async function connectWallet() {
+            try {
+                showToast('Connecting wallet...', 'info');
+                
+                if (!blockchainService) {
+                    blockchainService = new BlockchainService();
+                }
+                
+                await blockchainService.connectWallet();
+                updateStatus();
+                
+                // Auto-check admin status
+                setTimeout(checkAdminStatus, 1000);
+                
+                showToast('Wallet connected successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
+                showToast(`Connection failed: ${error.message}`, 'error');
+                updateStatus();
+            }
+        }
+        
+        async function checkAdminStatus() {
+            try {
+                if (!blockchainService || !blockchainService.isConnected()) {
+                    showToast('Please connect wallet first', 'warning');
+                    return;
+                }
+                
+                showToast('Checking admin status...', 'info');
+                
+                const isAdmin = await blockchainService.isAdmin();
+                const account = blockchainService.getCurrentAccount();
+                
+                // Get contract admin address
+                let contractAdmin = 'Unknown';
+                try {
+                    contractAdmin = await blockchainService.contract.methods.admin().call();
+                } catch (error) {
+                    console.warn('Could not get contract admin:', error);
+                }
+                
+                // Update UI
+                if (isAdmin) {
+                    document.getElementById('adminStatus').textContent = 'Yes (Admin)';
+                    document.getElementById('adminStatus').className = 'badge bg-success';
+                } else {
+                    document.getElementById('adminStatus').textContent = 'No (Not Admin)';
+                    document.getElementById('adminStatus').className = 'badge bg-warning';
+                }
+                
+                document.getElementById('contractAdmin').textContent = contractAdmin;
+                
+                showToast(isAdmin ? 'You are the admin!' : 'You are not the admin', isAdmin ? 'success' : 'warning');
+                
+            } catch (error) {
+                console.error('Error checking admin status:', error);
+                showToast(`Admin check failed: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testAdminDashboard() {
+            try {
+                if (!blockchainService || !blockchainService.isConnected()) {
+                    addTestResult('Admin Dashboard Access', false, 'Wallet not connected');
+                    showToast('Please connect wallet first', 'warning');
+                    return;
+                }
+                
+                addTestResult('Admin Dashboard Test Started', true, 'Testing admin dashboard access...');
+                
+                const isAdmin = await blockchainService.isAdmin();
+                
+                if (isAdmin) {
+                    addTestResult('Admin Access Test', true, 'Admin wallet can access dashboard');
+                    showToast('Admin access confirmed!', 'success');
+                } else {
+                    addTestResult('Admin Access Test', false, 'Non-admin wallet should be denied access');
+                    showToast('Non-admin detected - access should be denied', 'warning');
+                }
+                
+            } catch (error) {
+                console.error('Error testing admin dashboard:', error);
+                addTestResult('Admin Dashboard Test', false, `Test failed: ${error.message}`);
+                showToast(`Test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function clearResults() {
+            testResults = [];
+            updateTestResultsDisplay();
+            showToast('Test results cleared', 'info');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStatus();
+        });
+    </script>
+</body>
+</html>

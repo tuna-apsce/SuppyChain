@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Dashboard - AgriTrace</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../assets/css/main.css" rel="stylesheet">
+    <link href="../assets/css/components.css" rel="stylesheet">
+    <link href="../assets/css/dashboard.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <div class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-seedling me-2"></i>AgriTrace</h3>
+                <p>Farmer Dashboard</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#overview">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Overview
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#products">
+                            <i class="fas fa-box"></i>
+                            My Products
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#create-product">
+                            <i class="fas fa-plus-circle"></i>
+                            Create Product
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#harvest-events">
+                            <i class="fas fa-seedling"></i>
+                            Harvest Events
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#certifications">
+                            <i class="fas fa-certificate"></i>
+                            Certifications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#profile">
+                            <i class="fas fa-user"></i>
+                            Profile
+                        </a>
+                    </li>
+                    <li class="nav-item mt-3">
+                        <a class="nav-link" href="../index.html">
+                            <i class="fas fa-home"></i>
+                            Back to Home
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="dashboard-main">
+            <!-- Header -->
+            <div class="dashboard-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-1">Farmer Dashboard</h4>
+                        <p class="text-muted mb-0">Manage your agricultural products and harvest events</p>
+                    </div>
+                    <div class="header-user-info">
+                        <div class="user-details">
+                            <p class="user-name mb-0" id="userName">Loading...</p>
+                            <p class="user-role" id="userRole">FARMER</p>
+                        </div>
+                        <div class="user-avatar" id="userAvatar">F</div>
+                        <button class="btn btn-outline-primary btn-sm" id="connectWalletBtn">
+                            <i class="fas fa-wallet me-1"></i>Connect Wallet
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="dashboard-content">
+                <!-- Overview Section -->
+                <div id="overview-section" class="content-section">
+                    <!-- Stats Grid -->
+                    <div class="stats-grid mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="stat-number" id="totalProducts">0</div>
+                            <div class="stat-label">Total Products</div>
+                            <div class="stat-change positive" id="productsChange">+0 this month</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <div class="stat-number" id="totalHarvests">0</div>
+                            <div class="stat-label">Harvest Events</div>
+                            <div class="stat-change positive" id="harvestsChange">+0 this week</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-number" id="verifiedProducts">0</div>
+                            <div class="stat-label">Verified Products</div>
+                            <div class="stat-change neutral" id="verifiedChange">100% verified</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <div class="stat-number" id="activeSupplyChains">0</div>
+                            <div class="stat-label">Active Supply Chains</div>
+                            <div class="stat-change positive" id="supplyChainsChange">+0 active</div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions mb-4">
+                        <button class="quick-action-btn" id="quickCreateProduct">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="quick-action-text">Create Product</div>
+                        </button>
+                        <button class="quick-action-btn" id="quickAddHarvest">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <div class="quick-action-text">Add Harvest Event</div>
+                        </button>
+                        <button class="quick-action-btn" id="quickViewProducts">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-list"></i>
+                            </div>
+                            <div class="quick-action-text">View All Products</div>
+                        </button>
+                        <button class="quick-action-btn" id="quickGenerateQR">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-qrcode"></i>
+                            </div>
+                            <div class="quick-action-text">Generate QR Code</div>
+                        </button>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="content-grid">
+                        <div class="content-card">
+                            <div class="content-card-header">
+                                <div class="content-card-icon primary">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <h5 class="content-card-title">Recent Activity</h5>
+                            </div>
+                            <div class="activity-feed" id="recentActivity">
+                                <div class="text-center py-3">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Loading recent activity...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div class="content-card-header">
+                                <div class="content-card-icon info">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <h5 class="content-card-title">Product Categories</h5>
+                            </div>
+                            <div class="category-stats" id="categoryStats">
+                                <div class="text-center py-3">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Loading category stats...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Section -->
+                <div id="products-section" class="content-section d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4>My Products</h4>
+                        <button class="btn btn-dashboard btn-dashboard-primary" id="createProductBtn">
+                            <i class="fas fa-plus me-2"></i>Create New Product
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dashboard">
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Batch ID</th>
+                                    <th>Category</th>
+                                    <th>Quantity</th>
+                                    <th>Harvest Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Loading products...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Create Product Section -->
+                <div id="create-product-section" class="content-section d-none">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <div class="content-card-icon primary">
+                                        <i class="fas fa-plus-circle"></i>
+                                    </div>
+                                    <h5 class="content-card-title">Create New Product</h5>
+                                </div>
+                                <form id="createProductForm">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="productName" class="form-label">Product Name *</label>
+                                                <input type="text" class="form-control" id="productName" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="productCategory" class="form-label">Category *</label>
+                                                <select class="form-select" id="productCategory" required>
+                                                    <option value="">Select Category</option>
+                                                    <option value="Vegetables">Vegetables</option>
+                                                    <option value="Fruits">Fruits</option>
+                                                    <option value="Grains">Grains</option>
+                                                    <option value="Herbs">Herbs</option>
+                                                    <option value="Spices">Spices</option>
+                                                    <option value="Nuts">Nuts</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="productOrigin" class="form-label">Origin/Location *</label>
+                                                <input type="text" class="form-control" id="productOrigin" placeholder="e.g., California, USA" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="batchId" class="form-label">Batch ID</label>
+                                                <input type="text" class="form-control" id="batchId" placeholder="Auto-generated if empty">
+                                                <div class="form-text">Leave empty to auto-generate</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="harvestDate" class="form-label">Harvest Date *</label>
+                                                <input type="date" class="form-control" id="harvestDate" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="expiryDate" class="form-label">Expiry Date *</label>
+                                                <input type="date" class="form-control" id="expiryDate" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="productQuantity" class="form-label">Quantity *</label>
+                                                <input type="number" class="form-control" id="productQuantity" min="1" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="productUnit" class="form-label">Unit *</label>
+                                                <select class="form-select" id="productUnit" required>
+                                                    <option value="">Select Unit</option>
+                                                    <option value="kg">Kilograms (kg)</option>
+                                                    <option value="lbs">Pounds (lbs)</option>
+                                                    <option value="tons">Tons</option>
+                                                    <option value="pieces">Pieces</option>
+                                                    <option value="bushels">Bushels</option>
+                                                    <option value="crates">Crates</option>
+                                                    <option value="boxes">Boxes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="productDocuments" class="form-label">Certification Documents</label>
+                                                <input type="file" class="form-control" id="productDocuments" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                                                <div class="form-text">Upload certification documents (optional)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="productNotes" class="form-label">Additional Notes</label>
+                                        <textarea class="form-control" id="productNotes" rows="3" placeholder="Any additional information about the product..."></textarea>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-dashboard btn-dashboard-primary">
+                                            <i class="fas fa-save me-2"></i>Create Product
+                                        </button>
+                                        <button type="button" class="btn btn-dashboard btn-dashboard-outline" id="cancelCreateProduct">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <div class="content-card-icon info">
+                                        <i class="fas fa-info-circle"></i>
+                                    </div>
+                                    <h5 class="content-card-title">Tips</h5>
+                                </div>
+                                <div class="tips-content">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3">
+                                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                                            <strong>Batch ID:</strong> Use a consistent format like "TOMATO-2024-001"
+                                        </li>
+                                        <li class="mb-3">
+                                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                                            <strong>Origin:</strong> Be specific about the farm location
+                                        </li>
+                                        <li class="mb-3">
+                                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                                            <strong>Documents:</strong> Upload organic certificates, quality reports
+                                        </li>
+                                        <li class="mb-3">
+                                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                                            <strong>Quantity:</strong> Use standard units for better tracking
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Harvest Events Section -->
+                <div id="harvest-events-section" class="content-section d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4>Harvest Events</h4>
+                        <button class="btn btn-dashboard btn-dashboard-primary" id="addHarvestEventBtn">
+                            <i class="fas fa-plus me-2"></i>Add Harvest Event
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dashboard">
+                            <thead>
+                                <tr>
+                                    <th>Batch ID</th>
+                                    <th>Product Name</th>
+                                    <th>Harvest Date</th>
+                                    <th>Location</th>
+                                    <th>Quantity</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="harvestEventsTableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Loading harvest events...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Certifications Section -->
+                <div id="certifications-section" class="content-section d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4>Certifications</h4>
+                        <button class="btn btn-dashboard btn-dashboard-primary" id="uploadCertificationBtn">
+                            <i class="fas fa-upload me-2"></i>Upload Certification
+                        </button>
+                    </div>
+                    <div class="row" id="certificationsGrid">
+                        <div class="col-12 text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3 text-muted">Loading certifications...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Section -->
+                <div id="profile-section" class="content-section d-none">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <div class="content-card-icon primary">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <h5 class="content-card-title">Profile Information</h5>
+                                </div>
+                                <form id="profileForm">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="profileCompanyName" class="form-label">Company/Farm Name *</label>
+                                                <input type="text" class="form-control" id="profileCompanyName" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="profileRole" class="form-label">Role</label>
+                                                <input type="text" class="form-control" id="profileRole" value="Farmer" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="profileAddress" class="form-label">Wallet Address</label>
+                                                <input type="text" class="form-control" id="profileAddress" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="profileStatus" class="form-label">Verification Status</label>
+                                                <input type="text" class="form-control" id="profileStatus" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="profileDescription" class="form-label">Farm Description</label>
+                                        <textarea class="form-control" id="profileDescription" rows="4" placeholder="Describe your farm, farming practices, certifications, etc."></textarea>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-dashboard btn-dashboard-primary">
+                                            <i class="fas fa-save me-2"></i>Update Profile
+                                        </button>
+                                        <button type="button" class="btn btn-dashboard btn-dashboard-outline" id="refreshProfileBtn">
+                                            <i class="fas fa-refresh me-2"></i>Refresh
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <div class="content-card-icon info">
+                                        <i class="fas fa-chart-pie"></i>
+                                    </div>
+                                    <h5 class="content-card-title">Account Statistics</h5>
+                                </div>
+                                <div class="account-stats" id="accountStats">
+                                    <div class="text-center py-3">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Loading account stats...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notificationToast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="fas fa-info-circle text-primary me-2"></i>
+                <strong class="me-auto">AgriTrace</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                <!-- Toast message will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/web3.min.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/blockchain.js"></script>
+    <script src="../assets/js/ipfs.js"></script>
+    <script src="../assets/js/qrcode.min.js"></script>
+    <script src="../assets/js/qr-scanner.min.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/dashboard.js"></script>
+</body>
+</html>

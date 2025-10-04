@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple QR Test - AgriTrace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h3>Simple QR Code Test</h3>
+                
+                <div class="mb-3">
+                    <button class="btn btn-primary" onclick="testQR()">Test QR Code</button>
+                    <button class="btn btn-secondary" onclick="testDataURL()">Test DataURL</button>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Method 1: Direct QRCode</h5>
+                        <div id="method1" class="border p-3 text-center" style="min-height: 200px;">
+                            <p>Method 1 will appear here</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Method 2: DataURL Image</h5>
+                        <div id="method2" class="border p-3 text-center" style="min-height: 200px;">
+                            <p>Method 2 will appear here</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h5>Console Output:</h5>
+                    <div id="console" class="bg-light p-3" style="height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/qrcode.min.js"></script>
+    <script src="assets/js/utils.js"></script>
+    
+    <script>
+        function log(message) {
+            const console = document.getElementById('console');
+            console.innerHTML += message + '<br>';
+            console.scrollTop = console.scrollHeight;
+        }
+        
+        function testQR() {
+            try {
+                log('=== Testing Direct QRCode ===');
+                
+                const container = document.getElementById('method1');
+                container.innerHTML = '';
+                
+                // Method 1: Direct QRCode
+                const qr = new QRCode(container, {
+                    text: 'Hello World Test',
+                    width: 150,
+                    height: 150
+                });
+                
+                log('✅ Direct QRCode created');
+                
+                // Check if canvas exists
+                setTimeout(() => {
+                    const canvas = container.querySelector('canvas');
+                    if (canvas) {
+                        log('✅ Canvas found');
+                        log('Canvas width: ' + canvas.width);
+                        log('Canvas height: ' + canvas.height);
+                        
+                        // Test dataURL
+                        const dataURL = canvas.toDataURL('image/png');
+                        log('DataURL length: ' + dataURL.length);
+                        log('DataURL starts with: ' + dataURL.substring(0, 50) + '...');
+                        
+                        // Test if dataURL is valid
+                        const img = new Image();
+                        img.onload = () => {
+                            log('✅ DataURL is valid - image loaded');
+                            log('Image naturalWidth: ' + img.naturalWidth);
+                            log('Image naturalHeight: ' + img.naturalHeight);
+                        };
+                        img.onerror = () => {
+                            log('❌ DataURL is invalid - image failed to load');
+                        };
+                        img.src = dataURL;
+                        
+                    } else {
+                        log('❌ No canvas found');
+                    }
+                }, 100);
+                
+            } catch (error) {
+                log('❌ Error: ' + error.message);
+            }
+        }
+        
+        async function testDataURL() {
+            try {
+                log('=== Testing QRCodeGenerator ===');
+                
+                const qrGenerator = new QRCodeGenerator();
+                const dataURL = await qrGenerator.generateQRCode('DataURL Test');
+                
+                log('✅ QRCodeGenerator completed');
+                log('DataURL length: ' + dataURL.length);
+                log('DataURL starts with: ' + dataURL.substring(0, 50) + '...');
+                
+                // Display in container
+                const container = document.getElementById('method2');
+                container.innerHTML = `
+                    <img src="${dataURL}" alt="QR Code" style="max-width: 150px; max-height: 150px; border: 1px solid #ccc;">
+                    <br><small>DataURL Test</small>
+                `;
+                
+                // Test image loading
+                const img = container.querySelector('img');
+                img.onload = () => {
+                    log('✅ Image loaded successfully');
+                    log('Image naturalWidth: ' + img.naturalWidth);
+                    log('Image naturalHeight: ' + img.naturalHeight);
+                };
+                img.onerror = () => {
+                    log('❌ Image failed to load');
+                };
+                
+                // Additional test - create new image element
+                const testImg = new Image();
+                testImg.onload = () => {
+                    log('✅ Test image loaded - dataURL is valid');
+                };
+                testImg.onerror = () => {
+                    log('❌ Test image failed - dataURL is invalid');
+                };
+                testImg.src = dataURL;
+                
+            } catch (error) {
+                log('❌ Error: ' + error.message);
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            log('Page loaded');
+            log('QRCode available: ' + (typeof QRCode !== 'undefined'));
+            log('QRCodeGenerator available: ' + (typeof QRCodeGenerator !== 'undefined'));
+        });
+    </script>
+</body>
+</html>

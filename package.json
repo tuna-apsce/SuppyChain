@@ -1,0 +1,26 @@
+{
+  "name": "agri-trace",
+  "version": "1.0.0",
+  "description": "Blockchain Agricultural Product Traceability System",
+  "main": "index.html",
+  "scripts": {
+    "download-web3": "powershell -Command \"Invoke-WebRequest -Uri 'https://unpkg.com/web3@1.10.4/dist/web3.min.js' -OutFile 'assets/js/web3.min.js'\"",
+    "download-web3-unix": "curl -o assets/js/web3.min.js https://unpkg.com/web3@1.10.4/dist/web3.min.js",
+    "download-qr": "powershell -Command \"Invoke-WebRequest -Uri 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/lib/browser.js' -OutFile 'assets/js/qrcode.min.js'\" && powershell -Command \"Invoke-WebRequest -Uri 'https://cdn.jsdelivr.net/npm/qr-scanner@1.4.2/qr-scanner.umd.min.js' -OutFile 'assets/js/qr-scanner.min.js'\"",
+    "download-qr-unix": "curl -o assets/js/qrcode.min.js https://cdn.jsdelivr.net/npm/qrcode@1.5.3/lib/browser.js && curl -o assets/js/qr-scanner.min.js https://cdn.jsdelivr.net/npm/qr-scanner@1.4.2/qr-scanner.umd.min.js",
+    "setup": "npm run download-web3 && npm run download-qr",
+    "setup-unix": "npm run download-web3-unix && npm run download-qr-unix",
+    "dev": "echo 'Open index.html in your browser'",
+    "build": "echo 'Project is ready for deployment'"
+  },
+  "keywords": [
+    "blockchain",
+    "agriculture", 
+    "traceability",
+    "supply-chain",
+    "ethereum",
+    "bnb-smart-chain"
+  ],
+  "author": "AgriTrace Team",
+  "license": "MIT"
+}

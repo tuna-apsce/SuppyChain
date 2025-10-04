@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct getRegisteredUsers() Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .test-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .rpc-status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .rpc-success { background-color: #d4edda; color: #155724; }
+        .rpc-error { background-color: #f8d7da; color: #721c24; }
+        .rpc-testing { background-color: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 class="text-center mb-4">Direct getRegisteredUsers() Test</h1>
+        <p class="text-center text-muted">Test without wallet connection - Direct RPC calls</p>
+        
+        <!-- RPC Test Section -->
+        <div class="test-section">
+            <h3>1. RPC Endpoint Test</h3>
+            <div class="row">
+                <div class="col-md-8">
+                    <button id="testRpcBtn" class="btn btn-primary">Test All RPC Endpoints</button>
+                    <button id="testContractBtn" class="btn btn-success ms-2">Test Contract Connection</button>
+                </div>
+                <div class="col-md-4">
+                    <div id="rpcResults"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contract Test Section -->
+        <div class="test-section">
+            <h3>2. Contract Functions Test</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <button id="testGetUsersBtn" class="btn btn-info">Test getRegisteredUsers()</button>
+                    <button id="testGetUserBtn" class="btn btn-warning ms-2">Test getUser()</button>
+                </div>
+                <div class="col-md-6">
+                    <div id="contractResults"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="test-section">
+            <h3>3. Test Results</h3>
+            <div id="testResults"></div>
+        </div>
+
+        <!-- Console Section -->
+        <div class="test-section">
+            <h3>4. Console Logs</h3>
+            <div id="consoleLogs" class="bg-dark text-light p-3" style="height: 300px; overflow-y: auto; font-family: monospace; font-size: 0.9em;"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/web3.min.js"></script>
+
+    <script>
+        // Override console.log to display in our console
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function addToConsole(message, type = 'log') {
+            const consoleDiv = document.getElementById('consoleLogs');
+            const timestamp = new Date().toLocaleTimeString();
+            const colorClass = type === 'error' ? 'text-danger' : type === 'warn' ? 'text-warning' : 'text-light';
+            consoleDiv.innerHTML += `<div class="${colorClass}">[${timestamp}] ${message}</div>`;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole(args.join(' '), 'error');
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToConsole(args.join(' '), 'warn');
+        };
+
+        class DirectTester {
+            constructor() {
+                this.contractAddress = '0xCe086579FA47F0d918055CEf9821429C8c4a8a3b';
+                this.contractABI = [
+                    {
+                        "inputs": [],
+                        "name": "getRegisteredUsers",
+                        "outputs": [{"internalType": "address[]", "name": "", "type": "address[]"}],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [{"internalType": "address", "name": "userAddress", "type": "address"}],
+                        "name": "getUser",
+                        "outputs": [{
+                            "components": [
+                                {"internalType": "address", "name": "userAddress", "type": "address"},
+                                {"internalType": "uint8", "name": "role", "type": "uint8"},
+                                {"internalType": "string", "name": "companyName", "type": "string"},
+                                {"internalType": "bool", "name": "isVerified", "type": "bool"},
+                                {"internalType": "bool", "name": "isActive", "type": "bool"},
+                                {"internalType": "uint256", "name": "registrationDate", "type": "uint256"}
+                            ],
+                            "internalType": "struct AgriSupplyChain.User",
+                            "name": "",
+                            "type": "tuple"
+                        }],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "admin",
+                        "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "getProductCount",
+                        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+                        "stateMutability": "view",
+                        "type": "function"
+                    }
+                ];
+                
+                this.rpcEndpoints = [
+                    'https://data-seed-prebsc-1-s1.binance.org:8545/',
+                    'https://data-seed-prebsc-2-s1.binance.org:8545/',
+                    'https://data-seed-prebsc-1-s2.binance.org:8545/',
+                    'https://data-seed-prebsc-2-s2.binance.org:8545/',
+                    'https://data-seed-prebsc-1-s3.binance.org:8545/'
+                ];
+                
+                this.workingRpc = null;
+                this.contract = null;
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                document.getElementById('testRpcBtn').addEventListener('click', () => this.testAllRPCs());
+                document.getElementById('testContractBtn').addEventListener('click', () => this.testContractConnection());
+                document.getElementById('testGetUsersBtn').addEventListener('click', () => this.testGetRegisteredUsers());
+                document.getElementById('testGetUserBtn').addEventListener('click', () => this.testGetUser());
+            }
+
+            async testAllRPCs() {
+                console.log('🔍 Testing all RPC endpoints...');
+                const resultsDiv = document.getElementById('rpcResults');
+                resultsDiv.innerHTML = '<div class="rpc-testing">Testing RPC endpoints...</div>';
+                
+                let workingCount = 0;
+                let results = [];
+                
+                for (let i = 0; i < this.rpcEndpoints.length; i++) {
+                    const rpc = this.rpcEndpoints[i];
+                    try {
+                        console.log(`Testing RPC ${i + 1}: ${rpc}`);
+                        const web3 = new Web3(rpc);
+                        const blockNumber = await web3.eth.getBlockNumber();
+                        
+                        results.push({
+                            rpc,
+                            status: 'success',
+                            blockNumber,
+                            responseTime: Date.now()
+                        });
+                        workingCount++;
+                        
+                        if (!this.workingRpc) {
+                            this.workingRpc = rpc;
+                            this.contract = new web3.eth.Contract(this.contractABI, this.contractAddress);
+                        }
+                        
+                        console.log(`✅ RPC ${i + 1} working - Block: ${blockNumber}`);
+                        
+                    } catch (error) {
+                        results.push({
+                            rpc,
+                            status: 'error',
+                            error: error.message
+                        });
+                        console.error(`❌ RPC ${i + 1} failed:`, error.message);
+                    }
+                }
+                
+                // Display results
+                let html = '<div class="mt-3">';
+                results.forEach((result, index) => {
+                    const statusClass = result.status === 'success' ? 'rpc-success' : 'rpc-error';
+                    const statusText = result.status === 'success' ? '✅ Working' : '❌ Failed';
+                    const details = result.status === 'success' 
+                        ? `Block: ${result.blockNumber}` 
+                        : `Error: ${result.error}`;
+                    
+                    html += `
+                        <div class="rpc-status ${statusClass}">
+                            <strong>RPC ${index + 1}:</strong> ${statusText}<br>
+                            <small>${result.rpc}</small><br>
+                            <small>${details}</small>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                
+                resultsDiv.innerHTML = html;
+                console.log(`📊 RPC Test Results: ${workingCount}/${this.rpcEndpoints.length} working`);
+            }
+
+            async testContractConnection() {
+                if (!this.workingRpc) {
+                    console.error('No working RPC found. Please test RPCs first.');
+                    return;
+                }
+                
+                console.log('🔗 Testing contract connection...');
+                const resultsDiv = document.getElementById('contractResults');
+                resultsDiv.innerHTML = '<div class="rpc-testing">Testing contract connection...</div>';
+                
+                try {
+                    const admin = await this.contract.methods.admin().call();
+                    const productCount = await this.contract.methods.getProductCount().call();
+                    
+                    resultsDiv.innerHTML = `
+                        <div class="rpc-success">
+                            <strong>✅ Contract Connected</strong><br>
+                            <small>Admin: ${admin}</small><br>
+                            <small>Product Count: ${productCount}</small>
+                        </div>
+                    `;
+                    
+                    console.log('✅ Contract connection successful:', { admin, productCount });
+                    
+                } catch (error) {
+                    resultsDiv.innerHTML = `
+                        <div class="rpc-error">
+                            <strong>❌ Contract Connection Failed</strong><br>
+                            <small>Error: ${error.message}</small>
+                        </div>
+                    `;
+                    console.error('❌ Contract connection failed:', error);
+                }
+            }
+
+            async testGetRegisteredUsers() {
+                if (!this.contract) {
+                    console.error('Contract not available. Please test contract connection first.');
+                    return;
+                }
+                
+                console.log('👥 Testing getRegisteredUsers()...');
+                
+                try {
+                    const startTime = Date.now();
+                    const userAddresses = await this.contract.methods.getRegisteredUsers().call();
+                    const endTime = Date.now();
+                    
+                    console.log(`✅ Retrieved ${userAddresses.length} registered users in ${endTime - startTime}ms`);
+                    console.log('User addresses:', userAddresses);
+                    
+                    this.displayTestResults('getRegisteredUsers', {
+                        success: true,
+                        userCount: userAddresses.length,
+                        responseTime: endTime - startTime,
+                        users: userAddresses
+                    });
+                    
+                } catch (error) {
+                    console.error('❌ Error testing getRegisteredUsers():', error);
+                    this.displayTestResults('getRegisteredUsers', {
+                        success: false,
+                        error: error.message
+                    });
+                }
+            }
+
+            async testGetUser() {
+                if (!this.contract) {
+                    console.error('Contract not available. Please test contract connection first.');
+                    return;
+                }
+                
+                // First get a user address
+                try {
+                    const userAddresses = await this.contract.methods.getRegisteredUsers().call();
+                    if (userAddresses.length === 0) {
+                        console.warn('No users found to test getUser()');
+                        this.displayTestResults('getUser', {
+                            success: false,
+                            error: 'No users found to test'
+                        });
+                        return;
+                    }
+                    
+                    const testAddress = userAddresses[0];
+                    console.log(`🔍 Testing getUser() with address: ${testAddress}`);
+                    
+                    const startTime = Date.now();
+                    const userInfo = await this.contract.methods.getUser(testAddress).call();
+                    const endTime = Date.now();
+                    
+                    const roleNames = ['FARMER', 'PROCESSOR', 'TRANSPORTER', 'WAREHOUSE', 'RETAILER', 'CONSUMER', 'ADMIN'];
+                    const roleName = roleNames[userInfo.role] || 'UNKNOWN';
+                    
+                    console.log('✅ User details retrieved:', {
+                        address: testAddress,
+                        role: roleName,
+                        companyName: userInfo.companyName,
+                        isVerified: userInfo.isVerified,
+                        isActive: userInfo.isActive
+                    });
+                    
+                    this.displayTestResults('getUser', {
+                        success: true,
+                        responseTime: endTime - startTime,
+                        userInfo: {
+                            address: testAddress,
+                            role: roleName,
+                            companyName: userInfo.companyName,
+                            isVerified: userInfo.isVerified,
+                            isActive: userInfo.isActive
+                        }
+                    });
+                    
+                } catch (error) {
+                    console.error('❌ Error testing getUser():', error);
+                    this.displayTestResults('getUser', {
+                        success: false,
+                        error: error.message
+                    });
+                }
+            }
+
+            displayTestResults(testName, result) {
+                const resultsDiv = document.getElementById('testResults');
+                const timestamp = new Date().toLocaleTimeString();
+                
+                let html = `
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">${testName}() - ${timestamp}</h6>
+                        </div>
+                        <div class="card-body">
+                `;
+                
+                if (result.success) {
+                    html += `<div class="text-success">✅ Success</div>`;
+                    if (result.responseTime) {
+                        html += `<div><strong>Response Time:</strong> ${result.responseTime}ms</div>`;
+                    }
+                    if (result.userCount !== undefined) {
+                        html += `<div><strong>User Count:</strong> ${result.userCount}</div>`;
+                    }
+                    if (result.users) {
+                        html += `<div><strong>Users:</strong> ${result.users.join(', ')}</div>`;
+                    }
+                    if (result.userInfo) {
+                        html += `
+                            <div class="mt-2">
+                                <strong>User Info:</strong><br>
+                                <small>
+                                    Address: ${result.userInfo.address}<br>
+                                    Role: ${result.userInfo.role}<br>
+                                    Company: ${result.userInfo.companyName}<br>
+                                    Verified: ${result.userInfo.isVerified ? 'Yes' : 'No'}<br>
+                                    Active: ${result.userInfo.isActive ? 'Yes' : 'No'}
+                                </small>
+                            </div>
+                        `;
+                    }
+                } else {
+                    html += `<div class="text-danger">❌ Failed</div>`;
+                    html += `<div><strong>Error:</strong> ${result.error}</div>`;
+                }
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+                
+                resultsDiv.innerHTML = html + resultsDiv.innerHTML;
+            }
+        }
+
+        // Initialize tester when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.tester = new DirectTester();
+            console.log('🚀 Direct Tester initialized');
+            console.log('💡 Click "Test All RPC Endpoints" to start');
+        });
+    </script>
+</body>
+</html>

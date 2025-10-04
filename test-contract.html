@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Test - AgriTrace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Contract Deployment Test</h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Contract Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Contract Address:</strong> <span id="contractAddress">-</span></p>
+                        <p><strong>Network:</strong> BNB Smart Chain Testnet</p>
+                        <p><strong>Chain ID:</strong> 97 (0x61)</p>
+                        <p><strong>Connected Account:</strong> <span id="connectedAccount">-</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Contract Functions Test</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary mb-2" onclick="testContractConnection()">
+                            <i class="fas fa-link me-1"></i>Test Connection
+                        </button>
+                        <br>
+                        <button class="btn btn-success mb-2" onclick="testGetCurrentUser()">
+                            <i class="fas fa-user me-1"></i>Test getCurrentUser()
+                        </button>
+                        <br>
+                        <button class="btn btn-info mb-2" onclick="testGetUser()">
+                            <i class="fas fa-users me-1"></i>Test getUser()
+                        </button>
+                        <br>
+                        <button class="btn btn-warning mb-2" onclick="testIsUserRegistered()">
+                            <i class="fas fa-check me-1"></i>Test isUserRegistered()
+                        </button>
+                        <br>
+                        <button class="btn btn-secondary mb-2" onclick="testAdmin()">
+                            <i class="fas fa-crown me-1"></i>Test isAdmin()
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Test Results</h5>
+                </div>
+                <div class="card-body">
+                    <div id="testResults" class="bg-dark text-light p-3" style="height: 300px; overflow-y: auto; font-family: monospace;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <button class="btn btn-outline-primary" onclick="connectWallet()">
+                <i class="fas fa-wallet me-1"></i>Connect Wallet
+            </button>
+            <button class="btn btn-outline-success" onclick="registerTestUser()">
+                <i class="fas fa-user-plus me-1"></i>Register Test User
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/web3.min.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/blockchain.js"></script>
+    
+    <script>
+        let blockchainService = null;
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const output = document.getElementById('testResults');
+            const color = type === 'error' ? 'red' : type === 'success' ? 'green' : type === 'warning' ? 'orange' : 'white';
+            output.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            output.scrollTop = output.scrollHeight;
+            console.log(message);
+        }
+        
+        async function connectWallet() {
+            try {
+                log('Connecting wallet...', 'info');
+                blockchainService = new BlockchainService();
+                await blockchainService.connectWallet();
+                
+                document.getElementById('connectedAccount').textContent = blockchainService.account;
+                document.getElementById('contractAddress').textContent = blockchainService.contractAddress;
+                
+                log('Wallet connected successfully!', 'success');
+                log(`Account: ${blockchainService.account}`, 'info');
+                log(`Contract: ${blockchainService.contractAddress}`, 'info');
+                
+            } catch (error) {
+                log(`Error connecting wallet: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testContractConnection() {
+            try {
+                if (!blockchainService) {
+                    log('Please connect wallet first', 'warning');
+                    return;
+                }
+                
+                log('Testing contract connection...', 'info');
+                const networkHealth = await blockchainService.checkNetworkHealth();
+                log(`Network health: ${JSON.stringify(networkHealth)}`, 'info');
+                
+                if (networkHealth.healthy) {
+                    log('Contract connection successful!', 'success');
+                } else {
+                    log('Contract connection failed!', 'error');
+                }
+                
+            } catch (error) {
+                log(`Error testing contract connection: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testGetCurrentUser() {
+            try {
+                if (!blockchainService) {
+                    log('Please connect wallet first', 'warning');
+                    return;
+                }
+                
+                log('Testing getCurrentUser()...', 'info');
+                const user = await blockchainService.getCurrentUser();
+                
+                if (user) {
+                    log('getCurrentUser() successful!', 'success');
+                    log(`User: ${JSON.stringify(user, null, 2)}`, 'info');
+                } else {
+                    log('getCurrentUser() returned null - user not registered', 'warning');
+                }
+                
+            } catch (error) {
+                log(`Error testing getCurrentUser(): ${error.message}`, 'error');
+            }
+        }
+        
+        async function testGetUser() {
+            try {
+                if (!blockchainService) {
+                    log('Please connect wallet first', 'warning');
+                    return;
+                }
+                
+                log('Testing getUser()...', 'info');
+                const user = await blockchainService.getUser(blockchainService.account);
+                
+                if (user && user.userAddress !== '0x0000000000000000000000000000000000000000') {
+                    log('getUser() successful!', 'success');
+                    log(`User: ${JSON.stringify(user, null, 2)}`, 'info');
+                } else {
+                    log('getUser() returned empty user - user not registered', 'warning');
+                }
+                
+            } catch (error) {
+                log(`Error testing getUser(): ${error.message}`, 'error');
+            }
+        }
+        
+        async function testIsUserRegistered() {
+            try {
+                if (!blockchainService) {
+                    log('Please connect wallet first', 'warning');
+                    return;
+                }
+                
+                log('Testing isUserRegistered()...', 'info');
+                const isRegistered = await blockchainService.isUserRegistered();
+                log(`isUserRegistered(): ${isRegistered}`, isRegistered ? 'success' : 'warning');
+                
+            } catch (error) {
+                log(`Error testing isUserRegistered(): ${error.message}`, 'error');
+            }
+        }
+        
+        async function testAdmin() {
+            try {
+                if (!blockchainService) {
+                    log('Please connect wallet first', 'warning');
+                    return;
+                }
+                
+                log('Testing isAdmin()...', 'info');
+                const isAdmin = await blockchainService.isAdmin();
+                log(`isAdmin(): ${isAdmin}`, isAdmin ? 'success' : 'info');
+                
+            } catch (error) {
+                log(`Error testing isAdmin(): ${error.message}`, 'error');
+            }
+        }
+        
+        async function registerTestUser() {
+            try {
+                if (!blockchainService) {
+                    log('Please connect wallet first', 'warning');
+                    return;
+                }
+                
+                const role = prompt('Enter role (FARMER, PROCESSOR, TRANSPORTER, WAREHOUSE, RETAILER):');
+                const companyName = prompt('Enter company name:');
+                
+                if (!role || !companyName) {
+                    log('Role and company name are required', 'warning');
+                    return;
+                }
+                
+                log(`Registering user with role: ${role}, company: ${companyName}`, 'info');
+                const tx = await blockchainService.registerUser(role, companyName);
+                log('Registration transaction sent!', 'success');
+                log(`Transaction hash: ${tx.transactionHash}`, 'info');
+                
+                // Wait a bit then test again
+                setTimeout(async () => {
+                    log('Testing registration after transaction...', 'info');
+                    await testIsUserRegistered();
+                    await testGetCurrentUser();
+                }, 3000);
+                
+            } catch (error) {
+                log(`Error registering user: ${error.message}`, 'error');
+            }
+        }
+        
+        // Auto-connect on page load if MetaMask is available
+        window.addEventListener('load', () => {
+            if (typeof window.ethereum !== 'undefined') {
+                log('MetaMask detected, you can connect wallet', 'info');
+            } else {
+                log('MetaMask not detected, please install MetaMask', 'warning');
+            }
+        });
+    </script>
+</body>
+</html>

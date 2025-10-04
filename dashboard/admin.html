@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AgriTrace</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="../index.html">
+                <i class="fas fa-seedling me-2"></i>AgriTrace
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="admin.html">
+                            <i class="fas fa-users-cog me-1"></i>Admin
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light" id="connectWalletBtn">
+                            <i class="fas fa-wallet me-1"></i>Connect Wallet
+                        </button>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <div class="nav-link" id="userInfo">
+                            <!-- <i class="fas fa-user me-1"></i> -->
+                            <span id="userAddress"></span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-tachometer-alt me-2"></i>Admin Panel
+                        </h6>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="#user-management" class="list-group-item list-group-item-action active" data-bs-toggle="tab">
+                            <i class="fas fa-users me-2"></i>User Management
+                        </a>
+                        <a href="#system-stats" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                            <i class="fas fa-chart-bar me-2"></i>System Stats
+                        </a>
+                        <a href="#contract-info" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                            <i class="fas fa-info-circle me-2"></i>Contract Info
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-md-9 col-lg-10">
+                <div class="tab-content">
+                    <!-- User Management Tab -->
+                    <div class="tab-pane fade show active" id="user-management">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-users me-2"></i>User Management
+                                </h5>
+                                <button class="btn btn-primary btn-sm" id="refreshUsersBtn">
+                                    <i class="fas fa-sync-alt me-1"></i>Refresh
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <!-- User Search -->
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-search"></i>
+                                            </span>
+                                            <input type="text" class="form-control" id="userSearchInput" placeholder="Search by address or company name...">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-select" id="userFilterSelect">
+                                            <option value="all">All Roles</option>
+                                            <option value="FARMER">Farmers</option>
+                                            <option value="PROCESSOR">Processors</option>
+                                            <option value="TRANSPORTER">Transporters</option>
+                                            <option value="WAREHOUSE">Warehouses</option>
+                                            <option value="RETAILER">Retailers</option>
+                                            <option value="CONSUMER">Consumers</option>
+                                            <option value="ADMIN">Admins</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-select" id="statusFilterSelect">
+                                            <option value="all">All Status</option>
+                                            <option value="verified">Verified Only</option>
+                                            <option value="unverified">Unverified Only</option>
+                                            <option value="active">Active Only</option>
+                                            <option value="inactive">Inactive Only</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button class="btn btn-outline-secondary w-100" id="clearFiltersBtn">
+                                            <i class="fas fa-times me-1"></i>Clear
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- User Management Form -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <div class="card bg-light">
+                                            <div class="card-header">
+                                                <h6 class="mb-0">Manage User</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <form id="userManagementForm">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <label for="userAddressInput" class="form-label">User Address</label>
+                                                            <input type="text" class="form-control" id="userAddressInput" placeholder="0x..." required>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label class="form-label">Actions</label>
+                                                            <div class="d-grid gap-2">
+                                                                <button type="button" class="btn btn-success btn-sm" id="verifyUserBtn">
+                                                                    <i class="fas fa-check me-1"></i>Verify User
+                                                                </button>
+                                                                <button type="button" class="btn btn-warning btn-sm" id="activateUserBtn">
+                                                                    <i class="fas fa-play me-1"></i>Activate User
+                                                                </button>
+                                                                <button type="button" class="btn btn-danger btn-sm" id="deactivateUserBtn">
+                                                                    <i class="fas fa-pause me-1"></i>Deactivate User
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Users Table -->
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Address</th>
+                                                <th>Company</th>
+                                                <th>Role</th>
+                                                <th>Status</th>
+                                                <th>Verified</th>
+                                                <th>Registration Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="usersTableBody">
+                                            <tr>
+                                                <td colspan="6" class="text-center text-muted">
+                                                    <i class="fas fa-spinner fa-spin me-2"></i>Loading users...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Stats Tab -->
+                    <div class="tab-pane fade" id="system-stats">
+                        <div class="row">
+                            <div class="col-md-3 mb-4">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title">Total Users</h6>
+                                                <h3 id="totalUsersCount">-</h3>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <i class="fas fa-users fa-2x"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title">Verified Users</h6>
+                                                <h3 id="verifiedUsersCount">-</h3>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <i class="fas fa-check-circle fa-2x"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4">
+                                <div class="card bg-warning text-white">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title">Active Users</h6>
+                                                <h3 id="activeUsersCount">-</h3>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <i class="fas fa-user-check fa-2x"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title">Total Products</h6>
+                                                <h3 id="totalProductsCount">-</h3>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <i class="fas fa-box fa-2x"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-chart-pie me-2"></i>User Distribution by Role
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <canvas id="roleChart" width="400" height="200"></canvas>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div id="roleStats">
+                                            <!-- Role statistics will be populated here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contract Info Tab -->
+                    <div class="tab-pane fade" id="contract-info">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>Contract Information
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Contract Details</h6>
+                                        <table class="table table-sm">
+                                            <tr>
+                                                <td><strong>Contract Address:</strong></td>
+                                                <td id="contractAddress">-</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Network:</strong></td>
+                                                <td>BNB Smart Chain Testnet</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Chain ID:</strong></td>
+                                                <td>97 (0x61)</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Network Status</h6>
+                                        <div id="networkStatus">
+                                            <div class="alert alert-info">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                Checking network status...
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <h6>Quick Actions</h6>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-outline-primary" id="viewContractBtn">
+                                            <i class="fas fa-external-link-alt me-1"></i>View on BSCScan
+                                        </button>
+                                        <button class="btn btn-outline-secondary" id="copyContractBtn">
+                                            <i class="fas fa-copy me-1"></i>Copy Address
+                                        </button>
+                                        <button class="btn btn-outline-info" id="refreshNetworkBtn">
+                                            <i class="fas fa-sync-alt me-1"></i>Refresh Status
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="fas fa-info-circle text-primary me-2"></i>
+                <strong class="me-auto">AgriTrace</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                <!-- Toast message will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/web3.min.js"></script>
+    <script src="../assets/js/qrcode.min.js"></script>
+    <script src="../assets/js/qr-scanner.min.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/blockchain.js?v=4"></script>
+    <script src="../assets/js/ipfs.js"></script>
+    <!-- app.js not needed for admin dashboard -->
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        // Admin-specific JavaScript
+        class AdminDashboard {
+            constructor() {
+                this.blockchainService = new BlockchainService();
+                this.users = [];
+                this.allUsers = []; // Store loaded users for filtering
+                this.filterTimeout = null; // For debouncing
+                this.init();
+            }
+
+            async init() {
+                this.setupEventListeners();
+                
+                // Check admin access first
+                await this.checkAdminAccess();
+                
+                // Wait for blockchain service to be ready
+                if (this.blockchainService.isConnected()) {
+                    await this.loadContractInfo();
+                    await this.loadSystemStats();
+                } else {
+                    console.log('Blockchain service not connected yet');
+                }
+            }
+
+            async checkAdminAccess() {
+                try {
+                    // If wallet is already connected, check admin status immediately
+                    if (this.blockchainService.isConnected()) {
+                        const isAdmin = await this.blockchainService.isAdmin();
+                        if (!isAdmin) {
+                            this.showAdminAccessDenied();
+                            return false;
+                        }
+                        return true;
+                    }
+                    return true; // Allow connection attempt
+                } catch (error) {
+                    console.error('Error checking admin access:', error);
+                    return true; // Allow connection attempt
+                }
+            }
+
+            showAdminAccessDenied() {
+                document.body.innerHTML = `
+                    <div class="container mt-5">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-6">
+                                <div class="card border-danger">
+                                    <div class="card-header bg-danger text-white text-center">
+                                        <h4><i class="fas fa-exclamation-triangle me-2"></i>Access Denied</h4>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-user-shield fa-5x text-danger mb-4"></i>
+                                        <h5>Admin Access Required</h5>
+                                        <p class="text-muted">This page is restricted to system administrators only.</p>
+                                        <p class="text-muted">Your wallet is not authorized to access this dashboard.</p>
+                                        
+                                        <div class="mt-4">
+                                            <a href="../admin-setup.html" class="btn btn-primary me-2">
+                                                <i class="fas fa-user-shield me-2"></i>Check Admin Status
+                                            </a>
+                                            <a href="../index.html" class="btn btn-outline-secondary">
+                                                <i class="fas fa-home me-2"></i>Return Home
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            setupEventListeners() {
+                // User management form
+                document.getElementById('verifyUserBtn').addEventListener('click', () => this.verifyUser());
+                document.getElementById('activateUserBtn').addEventListener('click', () => this.activateUser());
+                document.getElementById('deactivateUserBtn').addEventListener('click', () => this.deactivateUser());
+                
+                // Search and filter
+                document.getElementById('userSearchInput').addEventListener('input', () => this.debouncedFilter());
+                document.getElementById('userFilterSelect').addEventListener('change', () => this.filterUsers());
+                document.getElementById('statusFilterSelect').addEventListener('change', () => this.filterUsers());
+                document.getElementById('clearFiltersBtn').addEventListener('click', () => this.clearFilters());
+                
+                // Refresh buttons
+                document.getElementById('refreshUsersBtn').addEventListener('click', () => this.loadUsers());
+                document.getElementById('refreshNetworkBtn').addEventListener('click', () => this.loadContractInfo());
+                
+                // Test contract button
+                const testContractBtn = document.getElementById('testContractBtn');
+                if (testContractBtn) {
+                    testContractBtn.addEventListener('click', () => this.testContractConnection());
+                }
+                
+                // Tab event listeners
+                document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+                    tab.addEventListener('shown.bs.tab', (event) => {
+                        const targetTab = event.target.getAttribute('href');
+                        if (targetTab === '#system-stats') {
+                            console.log('System Stats tab clicked, loading stats...');
+                            this.loadSystemStats();
+                        }
+                    });
+                });
+                
+                // Contract actions
+                document.getElementById('viewContractBtn').addEventListener('click', () => this.viewContractOnBSCScan());
+                document.getElementById('copyContractBtn').addEventListener('click', () => this.copyContractAddress());
+                
+                // Connect wallet button
+                const connectBtn = document.getElementById('connectWalletBtn');
+                if (connectBtn) {
+                    connectBtn.addEventListener('click', () => this.connectWallet());
+                }
+                
+                // Listen for wallet connection
+                if (window.ethereum) {
+                    window.ethereum.on('accountsChanged', () => {
+                        setTimeout(() => this.onWalletConnected(), 1000);
+                    });
+                    window.ethereum.on('chainChanged', () => {
+                        setTimeout(() => this.onWalletConnected(), 1000);
+                    });
+                }
+            }
+
+            async connectWallet() {
+                try {
+                    await this.blockchainService.connectWallet();
+                    
+                    // Check if user is admin (admin doesn't need to be registered)
+                    const isAdmin = await this.blockchainService.isAdmin();
+                    if (!isAdmin) {
+                        AgriTraceUtils.showToast('This wallet is not an admin wallet. Admin access required.', 'error');
+                        this.showAdminAccessDenied();
+                        return;
+                    }
+                    
+                    await this.onWalletConnected();
+                    AgriTraceUtils.showToast('Admin wallet connected successfully', 'success');
+                } catch (error) {
+                    console.error('Error connecting wallet:', error);
+                    AgriTraceUtils.showToast(error.message, 'error');
+                }
+            }
+
+            async onWalletConnected() {
+                console.log('Wallet connected, checking connection status...');
+                console.log('Connection status:', {
+                    isConnected: this.blockchainService.isConnected(),
+                    account: this.blockchainService.getCurrentAccount(),
+                    web3: this.blockchainService.web3 !== null,
+                    contract: this.blockchainService.contract !== null
+                });
+                
+                if (this.blockchainService.isConnected()) {
+                    // Ensure contract is loaded first
+                    if (!this.blockchainService.contract) {
+                        console.log('Contract not loaded, loading contract...');
+                        await this.blockchainService.loadContract();
+                    }
+                    
+                    await this.loadContractInfo();
+                    await this.loadSystemStats();
+                    await this.loadUsers();
+                } else {
+                    console.error('Wallet connection failed or lost');
+                    AgriTraceUtils.showToast('Wallet connection lost. Please reconnect.', 'error');
+                }
+            }
+
+            async ensureConnection() {
+                if (!this.blockchainService.isConnected()) {
+                    console.log('Connection lost, attempting to reconnect...');
+                    try {
+                        await this.blockchainService.connectWallet();
+                        console.log('Reconnected successfully');
+                    } catch (error) {
+                        console.error('Failed to reconnect:', error);
+                        AgriTraceUtils.showToast('Failed to reconnect wallet. Please refresh the page.', 'error');
+                        throw new Error('Connection lost and reconnection failed');
+                    }
+                }
+                
+                // Ensure contract is loaded
+                if (!this.blockchainService.contract) {
+                    console.log('Contract not loaded, loading contract...');
+                    await this.blockchainService.loadContract();
+                }
+            }
+
+            async verifyUser(address = null) {
+                if (!address) {
+                    address = document.getElementById('userAddressInput').value.trim();
+                }
+                
+                if (!address) {
+                    AgriTraceUtils.showToast('Please enter a user address', 'error');
+                    return;
+                }
+
+                try {
+                    await this.ensureConnection();
+
+                    const tx = await this.blockchainService.verifyUser(address);
+                    console.log('User verification transaction:', tx);
+                    AgriTraceUtils.showToast('User verified successfully', 'success');
+                    
+                    // Refresh user list
+                    await this.loadUsers();
+                } catch (error) {
+                    console.error('Error verifying user:', error);
+                    AgriTraceUtils.showToast(error.message, 'error');
+                }
+            }
+
+            async activateUser(address = null) {
+                if (!address) {
+                    address = document.getElementById('userAddressInput').value.trim();
+                }
+                
+                if (!address) {
+                    AgriTraceUtils.showToast('Please enter a user address', 'error');
+                    return;
+                }
+
+                try {
+                    await this.ensureConnection();
+
+                    await this.blockchainService.activateUser(address);
+                    AgriTraceUtils.showToast('User activated successfully', 'success');
+                    await this.loadUsers();
+                } catch (error) {
+                    console.error('Error activating user:', error);
+                    AgriTraceUtils.showToast(error.message, 'error');
+                }
+            }
+
+            async deactivateUser(address = null) {
+                if (!address) {
+                    address = document.getElementById('userAddressInput').value.trim();
+                }
+                
+                if (!address) {
+                    AgriTraceUtils.showToast('Please enter a user address', 'error');
+                    return;
+                }
+
+                try {
+                    await this.ensureConnection();
+
+                    await this.blockchainService.deactivateUser(address);
+                    AgriTraceUtils.showToast('User deactivated successfully', 'success');
+                    await this.loadUsers();
+                } catch (error) {
+                    console.error('Error deactivating user:', error);
+                    AgriTraceUtils.showToast(error.message, 'error');
+                }
+            }
+
+            async loadUsers() {
+                try {
+                    console.log('Loading users...');
+                    const tbody = document.getElementById('usersTableBody');
+                    
+                    // Show loading state
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">
+                                <i class="fas fa-spinner fa-spin me-2"></i>
+                                Loading users...
+                            </td>
+                        </tr>
+                    `;
+                    
+                    // Ensure contract is available
+                    if (!this.blockchainService.contract) {
+                        console.log('Contract not available, attempting to initialize...');
+                        await this.blockchainService.initializeWeb3WithFallback();
+                        await this.blockchainService.loadContract();
+                        
+                        if (!this.blockchainService.contract) {
+                            throw new Error('Contract not available. Please connect wallet first.');
+                        }
+                    }
+                    
+                    // Test contract connection first
+                    console.log('Testing contract connection...');
+                    try {
+                        await this.blockchainService.contract.methods.admin().call();
+                        console.log('Contract connection test successful');
+                    } catch (testError) {
+                        console.error('Contract connection test failed:', testError);
+                        throw new Error('Contract connection failed. Please check network and try again.');
+                    }
+                    
+                    // Get registered users from contract
+                    const userAddresses = await this.blockchainService.getRegisteredUsers();
+                    console.log(`Found ${userAddresses.length} registered users`);
+                    
+                    if (userAddresses.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">
+                                    <i class="fas fa-users me-2"></i>
+                                    No registered users found
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                    
+                    // Load user details for each address
+                    this.allUsers = [];
+                    const roleNames = ['FARMER', 'PROCESSOR', 'TRANSPORTER', 'WAREHOUSE', 'RETAILER', 'CONSUMER', 'ADMIN'];
+                    
+                    for (let i = 0; i < userAddresses.length; i++) {
+                        const address = userAddresses[i];
+                        try {
+                            const userInfo = await this.blockchainService.contract.methods.getUser(address).call();
+                            const roleName = roleNames[userInfo.role] || 'UNKNOWN';
+                            const registrationDate = new Date(userInfo.registrationDate * 1000).toLocaleDateString();
+                            
+                            const user = {
+                                address,
+                                companyName: userInfo.companyName,
+                                role: roleName,
+                                isActive: userInfo.isActive,
+                                isVerified: userInfo.isVerified,
+                                registrationDate
+                            };
+                            
+                            this.allUsers.push(user);
+                            
+                        } catch (userError) {
+                            console.warn(`Error loading user ${address}:`, userError);
+                            this.allUsers.push({
+                                address,
+                                companyName: 'Error loading',
+                                role: 'UNKNOWN',
+                                isActive: false,
+                                isVerified: false,
+                                registrationDate: 'N/A'
+                            });
+                        }
+                    }
+                    
+                    // Display all users initially
+                    this.displayUsers(this.allUsers);
+                    console.log('Users loaded successfully');
+                    
+                } catch (error) {
+                    console.error('Error loading users:', error);
+                    const tbody = document.getElementById('usersTableBody');
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center text-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Error loading users: ${error.message}
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+
+            displayUsers(users) {
+                const tbody = document.getElementById('usersTableBody');
+                let usersHtml = '';
+                
+                users.forEach(user => {
+                    usersHtml += `
+                        <tr>
+                            <td>
+                                <code class="small">${user.address}</code>
+                            </td>
+                            <td>${AgriTraceUtils.sanitizeHtml(user.companyName)}</td>
+                            <td>
+                                <span class="badge bg-primary">${user.role}</span>
+                            </td>
+                            <td>
+                                <span class="badge ${user.isActive ? 'bg-success' : 'bg-danger'}">
+                                    ${user.isActive ? 'Active' : 'Inactive'}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge ${user.isVerified ? 'bg-success' : 'bg-warning'}">
+                                    ${user.isVerified ? 'Verified' : 'Pending'}
+                                </span>
+                            </td>
+                            <td>${user.registrationDate}</td>
+                        </tr>
+                    `;
+                });
+                
+                tbody.innerHTML = usersHtml;
+            }
+
+            debouncedFilter() {
+                // Clear existing timeout
+                if (this.filterTimeout) {
+                    clearTimeout(this.filterTimeout);
+                }
+                
+                // Set new timeout
+                this.filterTimeout = setTimeout(() => {
+                    this.filterUsers();
+                }, 300); // 300ms delay
+            }
+
+            filterUsers() {
+                if (!this.allUsers || this.allUsers.length === 0) {
+                    console.log('No users loaded yet');
+                    return;
+                }
+                
+                // Get current filter values from DOM elements
+                const searchInput = document.getElementById('userSearchInput');
+                const roleSelect = document.getElementById('userFilterSelect');
+                const statusSelect = document.getElementById('statusFilterSelect');
+                
+                if (!searchInput || !roleSelect || !statusSelect) {
+                    console.error('Filter elements not found');
+                    return;
+                }
+                
+                const searchTerm = searchInput.value.trim();
+                const filterRole = roleSelect.value;
+                const filterStatus = statusSelect.value;
+                
+                // Only log if there's actual filtering happening
+                if (searchTerm || filterRole !== 'all' || filterStatus !== 'all') {
+                    console.log('Filtering with:', { searchTerm, filterRole, filterStatus });
+                }
+                
+                let filteredUsers = this.allUsers;
+                
+                // Filter by search term
+                if (searchTerm) {
+                    const term = searchTerm.toLowerCase();
+                    filteredUsers = filteredUsers.filter(user => 
+                        user.address.toLowerCase().includes(term) ||
+                        user.companyName.toLowerCase().includes(term)
+                    );
+                }
+                
+                // Filter by role
+                if (filterRole !== 'all') {
+                    filteredUsers = filteredUsers.filter(user => user.role === filterRole);
+                }
+                
+                // Filter by status
+                if (filterStatus !== 'all') {
+                    if (filterStatus === 'verified') {
+                        filteredUsers = filteredUsers.filter(user => user.isVerified);
+                    } else if (filterStatus === 'unverified') {
+                        filteredUsers = filteredUsers.filter(user => !user.isVerified);
+                    } else if (filterStatus === 'active') {
+                        filteredUsers = filteredUsers.filter(user => user.isActive);
+                    } else if (filterStatus === 'inactive') {
+                        filteredUsers = filteredUsers.filter(user => !user.isActive);
+                    }
+                }
+                
+                this.displayUsers(filteredUsers);
+                
+                // Only log if there's actual filtering happening
+                if (searchTerm || filterRole !== 'all' || filterStatus !== 'all') {
+                    console.log(`Filtered to ${filteredUsers.length} users`);
+                }
+            }
+
+            clearFilters() {
+                console.log('Clearing all filters...');
+                
+                // Reset search input
+                const searchInput = document.getElementById('userSearchInput');
+                if (searchInput) {
+                    searchInput.value = '';
+                }
+                
+                // Reset role filter
+                const roleSelect = document.getElementById('userFilterSelect');
+                if (roleSelect) {
+                    roleSelect.value = 'all';
+                }
+                
+                // Reset status filter
+                const statusSelect = document.getElementById('statusFilterSelect');
+                if (statusSelect) {
+                    statusSelect.value = 'all';
+                }
+                
+                // Display all users
+                if (this.allUsers) {
+                    this.displayUsers(this.allUsers);
+                    console.log('All filters cleared, showing all users');
+                }
+            }
+
+            async testContractConnection() {
+                try {
+                    console.log('Testing contract connection...');
+                    AgriTraceUtils.showToast('Testing contract connection...', 'info');
+                    
+                    // Ensure contract is available
+                    if (!this.blockchainService.contract) {
+                        console.log('Contract not available, attempting to initialize...');
+                        await this.blockchainService.initializeWeb3WithFallback();
+                        await this.blockchainService.loadContract();
+                        
+                        if (!this.blockchainService.contract) {
+                            throw new Error('Contract not available. Please connect wallet first.');
+                        }
+                    }
+                    
+                    // Test contract connection
+                    const admin = await this.blockchainService.contract.methods.admin().call();
+                    const productCount = await this.blockchainService.contract.methods.getProductCount().call();
+                    const userCount = await this.blockchainService.getRegisteredUsers();
+                    
+                    console.log('Contract connection test successful:', {
+                        admin,
+                        productCount,
+                        userCount: userCount.length
+                    });
+                    
+                    AgriTraceUtils.showToast('Contract connection successful!', 'success');
+                    
+                } catch (error) {
+                    console.error('Contract connection test failed:', error);
+                    AgriTraceUtils.showToast(`Contract test failed: ${error.message}`, 'error');
+                }
+            }
+
+            async loadSystemStats() {
+                try {
+                    // Prevent duplicate calls
+                    if (this.loadingStats) {
+                        console.log('System stats already loading, skipping...');
+                        return;
+                    }
+                    this.loadingStats = true;
+                    
+                    console.log('=== loadSystemStats Debug ===');
+                    console.log('blockchainService:', this.blockchainService);
+                    console.log('isConnected():', this.blockchainService.isConnected());
+                    console.log('contract:', this.blockchainService.contract);
+                    
+                    // Ensure blockchain service is ready
+                    if (!this.blockchainService.isConnected()) {
+                        console.log('Blockchain service not connected, attempting to connect...');
+                        await this.blockchainService.connectWallet();
+                        console.log('Wallet connected:', this.blockchainService.isConnected());
+                    }
+                    
+                    if (!this.blockchainService.contract) {
+                        console.log('Contract not loaded, attempting to load...');
+                        await this.blockchainService.loadContract();
+                        console.log('Contract loaded:', !!this.blockchainService.contract);
+                    }
+                    
+                    if (!this.blockchainService.isConnected() || !this.blockchainService.contract) {
+                        console.error('Blockchain service still not ready after attempts');
+                        this.showSystemStatsError('Blockchain service not ready. Please ensure wallet is connected.');
+                        return;
+                    }
+                    
+                    console.log('Loading system statistics...');
+                    
+                    try {
+                        // Use retry logic from blockchain.js for network issues
+                        const loadStatsWithRetry = async () => {
+                            const [productCount, registeredUsers] = await Promise.all([
+                                this.blockchainService.getProductCount(),
+                                this.blockchainService.getRegisteredUsers()
+                            ]);
+                            return { productCount, registeredUsers };
+                        };
+                        
+                        const { productCount, registeredUsers } = await this.blockchainService.retryWithBackoff(loadStatsWithRetry);
+                        
+                        console.log('Raw data:', { productCount, registeredUsers });
+                        
+                        // Calculate user statistics
+                        let totalUsers = 0;
+                        let verifiedUsers = 0;
+                        let activeUsers = 0;
+                        
+                        if (registeredUsers && registeredUsers.length > 0) {
+                            totalUsers = registeredUsers.length;
+                            
+                            // Get detailed user info for verification and active status with retry
+                            const userDetails = await Promise.all(
+                                registeredUsers.map(address => 
+                                    this.blockchainService.retryWithBackoff(() => 
+                                        this.blockchainService.getUser(address)
+                                    ).catch(error => {
+                                        console.warn(`Error getting user details for ${address}:`, error);
+                                        return null;
+                                    })
+                                )
+                            );
+                            
+                            // Count verified and active users
+                            userDetails.forEach(user => {
+                                if (user && user.userAddress !== '0x0000000000000000000000000000000000000000') {
+                                    if (user.isVerified) {
+                                        verifiedUsers++;
+                                    }
+                                    if (user.isActive) {
+                                        activeUsers++;
+                                    }
+                                }
+                            });
+                        }
+                        
+                        console.log('Calculated stats:', { totalUsers, verifiedUsers, activeUsers, productCount });
+                        
+                        // Update UI with calculated statistics
+                        document.getElementById('totalUsersCount').textContent = totalUsers;
+                        document.getElementById('verifiedUsersCount').textContent = verifiedUsers;
+                        document.getElementById('activeUsersCount').textContent = activeUsers;
+                        document.getElementById('totalProductsCount').textContent = productCount;
+                        
+                        console.log('System stats loaded successfully');
+                        
+                    } catch (blockchainError) {
+                        console.warn('Blockchain calls failed, trying fallback approach:', blockchainError);
+                        
+                        // Fallback: Use data from already loaded users if available
+                        if (this.allUsers && this.allUsers.length > 0) {
+                            console.log('Using fallback data from loaded users...');
+                            
+                            const totalUsers = this.allUsers.length;
+                            const verifiedUsers = this.allUsers.filter(user => user.isVerified).length;
+                            const activeUsers = this.allUsers.filter(user => user.isActive).length;
+                            
+                            // Try to get product count from batch IDs as fallback
+                            let productCount = '~';
+                            try {
+                                console.log('Attempting to get batch IDs for product count estimation...');
+                                const batchIds = await this.blockchainService.retryWithBackoff(() => 
+                                    this.blockchainService.getAllBatchIds()
+                                );
+                                productCount = batchIds ? batchIds.length : '~';
+                                console.log('Estimated product count from batch IDs:', productCount);
+                            } catch (batchError) {
+                                console.warn('Could not get batch IDs for product count:', batchError);
+                                productCount = '~';
+                            }
+                            
+                            console.log('Fallback stats:', { totalUsers, verifiedUsers, activeUsers, productCount });
+                            
+                            // Update UI with fallback statistics
+                            document.getElementById('totalUsersCount').textContent = totalUsers;
+                            document.getElementById('verifiedUsersCount').textContent = verifiedUsers;
+                            document.getElementById('activeUsersCount').textContent = activeUsers;
+                            document.getElementById('totalProductsCount').textContent = productCount;
+                            
+                            console.log('System stats loaded with fallback data');
+                            
+                            // Show info message about fallback data
+                            if (typeof AgriTraceUtils !== 'undefined') {
+                                if (productCount === '~') {
+                                    AgriTraceUtils.showToast('Stats loaded with cached user data. Product count unavailable due to network issues.', 'warning');
+                                } else {
+                                    AgriTraceUtils.showToast('Stats loaded with cached data. Product count estimated from batch IDs.', 'info');
+                                }
+                            }
+                        } else {
+                            throw blockchainError; // Re-throw if no fallback data available
+                        }
+                    }
+                    
+                } catch (error) {
+                    console.error('Error loading system stats:', error);
+                    this.showSystemStatsError(`Error loading stats: ${error.message}`);
+                } finally {
+                    this.loadingStats = false;
+                }
+            }
+            
+            showSystemStatsError(message) {
+                console.error('System stats error:', message);
+                document.getElementById('totalUsersCount').textContent = '-';
+                document.getElementById('verifiedUsersCount').textContent = '-';
+                document.getElementById('activeUsersCount').textContent = '-';
+                document.getElementById('totalProductsCount').textContent = '-';
+                
+                // Show error toast if AgriTraceUtils is available
+                if (typeof AgriTraceUtils !== 'undefined') {
+                    AgriTraceUtils.showToast(message, 'error');
+                } else {
+                    alert(message);
+                }
+            }
+
+            async loadContractInfo() {
+                document.getElementById('contractAddress').textContent = this.blockchainService.contractAddress;
+                
+                try {
+                    const networkHealth = await this.blockchainService.checkNetworkHealth();
+                    const statusDiv = document.getElementById('networkStatus');
+                    
+                    if (networkHealth.healthy) {
+                        statusDiv.innerHTML = `
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Network connected. Block: ${networkHealth.blockNumber}
+                            </div>
+                        `;
+                    } else {
+                        statusDiv.innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Network error: ${networkHealth.error}
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Error checking network:', error);
+                }
+            }
+
+            viewContractOnBSCScan() {
+                const url = `https://testnet.bscscan.com/address/${this.blockchainService.contractAddress}`;
+                window.open(url, '_blank');
+            }
+
+            copyContractAddress() {
+                navigator.clipboard.writeText(this.blockchainService.contractAddress);
+                AgriTraceUtils.showToast('Contract address copied to clipboard', 'success');
+            }
+
+        }
+
+        // Initialize admin dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new AdminDashboard();
+        });
+    </script>
+</body>
+</html>

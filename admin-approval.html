@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Approval - AgriTrace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+            padding: 40px 0;
+        }
+        .user-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #e9ecef;
+        }
+        .user-card.pending {
+            border-left-color: #ffc107;
+        }
+        .user-card.approved {
+            border-left-color: #28a745;
+        }
+        .user-card.rejected {
+            border-left-color: #dc3545;
+        }
+        .role-badge {
+            font-size: 0.8em;
+        }
+        .status-badge {
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-seedling me-2"></i>AgriTrace Admin
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-home me-1"></i>Home
+                </a>
+                <a class="nav-link" href="register.html">
+                    <i class="fas fa-user-plus me-1"></i>Register
+                </a>
+                <button class="btn btn-outline-light ms-2" id="connectWalletBtn">
+                    <i class="fas fa-wallet me-1"></i>Connect Wallet
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-5 mb-3">
+                <i class="fas fa-users-cog me-3"></i>User Approval Dashboard
+            </h1>
+            <p class="lead">Manage user registrations and system access</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- Admin Check -->
+        <div class="row" id="adminCheckSection">
+            <div class="col-12">
+                <div class="alert alert-warning text-center">
+                    <i class="fas fa-shield-alt fa-2x mb-3"></i>
+                    <h4>Admin Access Required</h4>
+                    <p>Please connect your admin wallet to access this dashboard.</p>
+                    <button class="btn btn-warning" id="checkAdminBtn">
+                        <i class="fas fa-user-shield me-2"></i>Check Admin Status
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div class="row" id="adminDashboard" style="display: none;">
+            <!-- Stats Cards -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title" id="totalUsersCount">-</h4>
+                                <p class="card-text">Total Users</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-users fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title" id="pendingUsersCount">-</h4>
+                                <p class="card-text">Pending Approval</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-clock fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title" id="verifiedUsersCount">-</h4>
+                                <p class="card-text">Verified Users</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-check-circle fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title" id="activeUsersCount">-</h4>
+                                <p class="card-text">Active Users</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-user-check fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Management -->
+        <div class="row" id="userManagementSection" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2"></i>User Management
+                        </h5>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="filterUsers('all')">
+                                All Users
+                            </button>
+                            <button type="button" class="btn btn-outline-warning btn-sm" onclick="filterUsers('pending')">
+                                Pending
+                            </button>
+                            <button type="button" class="btn btn-outline-success btn-sm" onclick="filterUsers('verified')">
+                                Verified
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="usersList">
+                            <!-- Users will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Details Modal -->
+    <div class="modal fade" id="userDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user me-2"></i>User Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="userDetailsContent">
+                    <!-- User details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" id="verifyUserBtn" style="display: none;">
+                        <i class="fas fa-check me-2"></i>Verify User
+                    </button>
+                    <button type="button" class="btn btn-warning" id="activateUserBtn" style="display: none;">
+                        <i class="fas fa-power-off me-2"></i>Activate User
+                    </button>
+                    <button type="button" class="btn btn-danger" id="deactivateUserBtn" style="display: none;">
+                        <i class="fas fa-ban me-2"></i>Deactivate User
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="fas fa-info-circle text-primary me-2"></i>
+                <strong class="me-auto">AgriTrace Admin</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                <!-- Toast message will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/web3.min.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/blockchain.js"></script>
+    <script src="assets/js/ipfs.js"></script>
+    <script src="assets/js/app.js"></script>
+    
+    <script>
+        class AdminApprovalManager {
+            constructor() {
+                this.blockchainService = new BlockchainService();
+                this.currentUser = null;
+                this.users = [];
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                document.getElementById('connectWalletBtn').addEventListener('click', () => this.connectWallet());
+                document.getElementById('checkAdminBtn').addEventListener('click', () => this.checkAdminStatus());
+                
+                // Modal buttons
+                document.getElementById('verifyUserBtn').addEventListener('click', () => this.verifyUser());
+                document.getElementById('activateUserBtn').addEventListener('click', () => this.activateUser());
+                document.getElementById('deactivateUserBtn').addEventListener('click', () => this.deactivateUser());
+            }
+
+            async connectWallet() {
+                try {
+                    AgriTraceUtils.showToast('Connecting wallet...', 'info');
+                    await this.blockchainService.connectWallet();
+                    
+                    const isAdmin = await this.blockchainService.isAdmin();
+                    if (!isAdmin) {
+                        AgriTraceUtils.showToast('This wallet is not an admin wallet', 'error');
+                        return;
+                    }
+                    
+                    this.currentUser = await this.blockchainService.getCurrentUser();
+                    this.showAdminDashboard();
+                    await this.loadUsers();
+                    
+                    AgriTraceUtils.showToast('Admin access granted', 'success');
+                    
+                } catch (error) {
+                    console.error('Error connecting wallet:', error);
+                    AgriTraceUtils.showToast(`Connection failed: ${error.message}`, 'error');
+                }
+            }
+
+            async checkAdminStatus() {
+                try {
+                    if (!this.blockchainService.isConnected()) {
+                        await this.connectWallet();
+                        return;
+                    }
+                    
+                    const isAdmin = await this.blockchainService.isAdmin();
+                    if (!isAdmin) {
+                        AgriTraceUtils.showToast('This wallet is not an admin wallet', 'error');
+                        return;
+                    }
+                    
+                    this.showAdminDashboard();
+                    await this.loadUsers();
+                    
+                } catch (error) {
+                    console.error('Error checking admin status:', error);
+                    AgriTraceUtils.showToast(`Error: ${error.message}`, 'error');
+                }
+            }
+
+            showAdminDashboard() {
+                document.getElementById('adminCheckSection').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'block';
+                document.getElementById('userManagementSection').style.display = 'block';
+            }
+
+            async loadUsers() {
+                try {
+                    // This would need to be implemented in the smart contract
+                    // For now, we'll show a message that this feature needs to be implemented
+                    document.getElementById('usersList').innerHTML = `
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle fa-2x mb-3"></i>
+                            <h5>User Management</h5>
+                            <p>This feature requires additional smart contract functions to list all users.</p>
+                            <p>For now, you can manage users through the main admin dashboard.</p>
+                            <a href="dashboard/admin.html" class="btn btn-primary">
+                                <i class="fas fa-external-link-alt me-2"></i>Go to Admin Dashboard
+                            </a>
+                        </div>
+                    `;
+                    
+                    // Update stats (placeholder values)
+                    document.getElementById('totalUsersCount').textContent = '-';
+                    document.getElementById('pendingUsersCount').textContent = '-';
+                    document.getElementById('verifiedUsersCount').textContent = '-';
+                    document.getElementById('activeUsersCount').textContent = '-';
+                    
+                } catch (error) {
+                    console.error('Error loading users:', error);
+                    AgriTraceUtils.showToast(`Error loading users: ${error.message}`, 'error');
+                }
+            }
+
+            async verifyUser() {
+                // Implementation would go here
+                AgriTraceUtils.showToast('User verification feature coming soon', 'info');
+            }
+
+            async activateUser() {
+                // Implementation would go here
+                AgriTraceUtils.showToast('User activation feature coming soon', 'info');
+            }
+
+            async deactivateUser() {
+                // Implementation would go here
+                AgriTraceUtils.showToast('User deactivation feature coming soon', 'info');
+            }
+        }
+
+        // Initialize admin approval manager
+        document.addEventListener('DOMContentLoaded', () => {
+            new AdminApprovalManager();
+        });
+    </script>
+</body>
+</html>

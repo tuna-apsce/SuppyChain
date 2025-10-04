@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Debug Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Admin Debug Test</h1>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Debug Admin Contract Connection</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <button id="connectBtn" class="btn btn-primary">Connect Wallet</button>
+                            <span id="connectionStatus" class="ms-2"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <button id="testContractBtn" class="btn btn-success">Test Contract</button>
+                            <button id="testUsersBtn" class="btn btn-info">Test getRegisteredUsers</button>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <button id="testAdminBtn" class="btn btn-warning">Test isAdmin</button>
+                            <button id="loadUsersBtn" class="btn btn-secondary">Load Users</button>
+                        </div>
+                        
+                        <div id="results" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/web3.min.js"></script>
+    <script src="assets/js/blockchain.js?v=2"></script>
+    <script src="assets/js/utils.js?v=3"></script>
+
+    <script>
+        class AdminDebugTester {
+            constructor() {
+                this.blockchainService = new BlockchainService();
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                document.getElementById('connectBtn').addEventListener('click', () => this.connectWallet());
+                document.getElementById('testContractBtn').addEventListener('click', () => this.testContract());
+                document.getElementById('testUsersBtn').addEventListener('click', () => this.testGetRegisteredUsers());
+                document.getElementById('testAdminBtn').addEventListener('click', () => this.testIsAdmin());
+                document.getElementById('loadUsersBtn').addEventListener('click', () => this.loadUsers());
+            }
+
+            async connectWallet() {
+                try {
+                    console.log('Connecting wallet...');
+                    await this.blockchainService.connectWallet();
+                    
+                    document.getElementById('connectionStatus').innerHTML = '<span class="text-success">✓ Connected</span>';
+                    console.log('Wallet connected successfully');
+                    
+                    // Test admin status
+                    const isAdmin = await this.blockchainService.isAdmin();
+                    console.log('Is admin:', isAdmin);
+                    
+                } catch (error) {
+                    console.error('Error connecting wallet:', error);
+                    document.getElementById('connectionStatus').innerHTML = '<span class="text-danger">✗ Failed</span>';
+                }
+            }
+
+            async testContract() {
+                try {
+                    console.log('Testing contract...');
+                    this.addResult('Testing contract connection...', 'info');
+                    
+                    if (!this.blockchainService.contract) {
+                        throw new Error('Contract not available');
+                    }
+                    
+                    const admin = await this.blockchainService.contract.methods.admin().call();
+                    const productCount = await this.blockchainService.contract.methods.getProductCount().call();
+                    
+                    this.addResult(`✅ Contract test successful:<br>Admin: ${admin}<br>Product Count: ${productCount}`, 'success');
+                    console.log('Contract test successful:', { admin, productCount });
+                    
+                } catch (error) {
+                    console.error('Contract test failed:', error);
+                    this.addResult(`❌ Contract test failed: ${error.message}`, 'error');
+                }
+            }
+
+            async testGetRegisteredUsers() {
+                try {
+                    console.log('Testing getRegisteredUsers...');
+                    this.addResult('Testing getRegisteredUsers...', 'info');
+                    
+                    if (!this.blockchainService.contract) {
+                        throw new Error('Contract not available');
+                    }
+                    
+                    // Use the method from blockchain service
+                    const userAddresses = await this.blockchainService.getRegisteredUsers();
+                    
+                    this.addResult(`✅ getRegisteredUsers successful:<br>Found ${userAddresses.length} users:<br>${userAddresses.join('<br>')}`, 'success');
+                    console.log('getRegisteredUsers successful:', userAddresses);
+                    
+                } catch (error) {
+                    console.error('getRegisteredUsers test failed:', error);
+                    this.addResult(`❌ getRegisteredUsers failed: ${error.message}`, 'error');
+                }
+            }
+
+            async testIsAdmin() {
+                try {
+                    console.log('Testing isAdmin...');
+                    this.addResult('Testing isAdmin...', 'info');
+                    
+                    const isAdmin = await this.blockchainService.isAdmin();
+                    
+                    this.addResult(`✅ isAdmin test successful:<br>Is Admin: ${isAdmin}`, 'success');
+                    console.log('isAdmin test successful:', isAdmin);
+                    
+                } catch (error) {
+                    console.error('isAdmin test failed:', error);
+                    this.addResult(`❌ isAdmin failed: ${error.message}`, 'error');
+                }
+            }
+
+            async loadUsers() {
+                try {
+                    console.log('Loading users...');
+                    this.addResult('Loading users...', 'info');
+                    
+                    if (!this.blockchainService.contract) {
+                        throw new Error('Contract not available');
+                    }
+                    
+                    const userAddresses = await this.blockchainService.getRegisteredUsers();
+                    console.log(`Found ${userAddresses.length} users`);
+                    
+                    if (userAddresses.length === 0) {
+                        this.addResult('No users found', 'warning');
+                        return;
+                    }
+                    
+                    let usersHtml = '<h6>User Details:</h6>';
+                    const roleNames = ['FARMER', 'PROCESSOR', 'TRANSPORTER', 'WAREHOUSE', 'RETAILER', 'CONSUMER', 'ADMIN'];
+                    
+                    for (let i = 0; i < userAddresses.length; i++) {
+                        const address = userAddresses[i];
+                        try {
+                            const userInfo = await this.blockchainService.contract.methods.getUser(address).call();
+                            const roleName = roleNames[userInfo.role] || 'UNKNOWN';
+                            
+                            usersHtml += `
+                                <div class="border p-2 mb-2">
+                                    <strong>User ${i + 1}:</strong><br>
+                                    Address: ${address}<br>
+                                    Role: ${roleName}<br>
+                                    Company: ${userInfo.companyName}<br>
+                                    Verified: ${userInfo.isVerified ? 'Yes' : 'No'}<br>
+                                    Active: ${userInfo.isActive ? 'Yes' : 'No'}
+                                </div>
+                            `;
+                            
+                        } catch (userError) {
+                            console.warn(`Error loading user ${address}:`, userError);
+                            usersHtml += `
+                                <div class="border p-2 mb-2 text-danger">
+                                    <strong>User ${i + 1}:</strong><br>
+                                    Address: ${address}<br>
+                                    Error: ${userError.message}
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    this.addResult(usersHtml, 'success');
+                    
+                } catch (error) {
+                    console.error('Error loading users:', error);
+                    this.addResult(`❌ Error loading users: ${error.message}`, 'error');
+                }
+            }
+
+            addResult(message, type) {
+                const resultsDiv = document.getElementById('results');
+                const timestamp = new Date().toLocaleTimeString();
+                const alertClass = type === 'success' ? 'alert-success' : 
+                                 type === 'error' ? 'alert-danger' : 
+                                 type === 'warning' ? 'alert-warning' : 'alert-info';
+                
+                resultsDiv.innerHTML += `
+                    <div class="alert ${alertClass}">
+                        <strong>[${timestamp}]</strong><br>
+                        ${message}
+                    </div>
+                `;
+                
+                resultsDiv.scrollTop = resultsDiv.scrollHeight;
+            }
+        }
+
+        // Initialize tester when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.tester = new AdminDebugTester();
+            console.log('Admin Debug Tester initialized');
+        });
+    </script>
+</body>
+</html>

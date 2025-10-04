@@ -1,0 +1,2190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processor Dashboard - AgriTrace</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../assets/css/main.css" rel="stylesheet">
+    <link href="../assets/css/components.css" rel="stylesheet">
+    <link href="../assets/css/dashboard.css" rel="stylesheet">
+    
+    <style>
+        /* Timeline styles */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #dee2e6;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            left: -22px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 2px #dee2e6;
+        }
+        
+        .timeline-item.active .timeline-marker {
+            box-shadow: 0 0 0 2px #0d6efd;
+        }
+        
+        .timeline-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #dee2e6;
+        }
+        
+        .timeline-item.active .timeline-content {
+            background: #e7f3ff;
+            border-left-color: #0d6efd;
+        }
+        
+        /* Document viewer styles */
+        .document-item {
+            transition: all 0.3s ease;
+        }
+        
+        .document-item:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .document-icon {
+            min-width: 60px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <div class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-industry me-2"></i>AgriTrace</h3>
+                <p>Processor Dashboard</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#overview">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Overview
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#processing-events">
+                            <i class="fas fa-cogs"></i>
+                            Processing Events
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#add-processing">
+                            <i class="fas fa-plus-circle"></i>
+                            Add Processing Event
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#quality-reports">
+                            <i class="fas fa-chart-line"></i>
+                            Quality Reports
+                        </a>
+                    </li>
+                    <!-- Certifications section hidden as requested -->
+                    <!-- <li class="nav-item">
+                        <a class="nav-link" href="#certifications">
+                            <i class="fas fa-certificate"></i>
+                            Certifications
+                        </a>
+                    </li> -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#profile">
+                            <i class="fas fa-user"></i>
+                            Profile
+                        </a>
+                    </li>
+                    <li class="nav-item mt-3">
+                        <a class="nav-link" href="../index.html">
+                            <i class="fas fa-home"></i>
+                            Back to Home
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="dashboard-main">
+            <!-- Header -->
+            <div class="dashboard-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-1">Processor Dashboard</h4>
+                        <p class="text-muted mb-0">Manage processing events and quality reports</p>
+                    </div>
+                    <div class="header-user-info">
+                        <div class="user-details">
+                            <p class="user-name mb-0" id="userName">Loading...</p>
+                            <p class="user-role" id="userRole">PROCESSOR</p>
+                        </div>
+                        <div class="user-avatar" id="userAvatar">P</div>
+                        <button class="btn btn-outline-primary btn-sm" id="connectWalletBtn">
+                            <i class="fas fa-wallet me-1"></i>Connect Wallet
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="dashboard-content">
+                <!-- Overview Section -->
+                <div id="overview-section" class="content-section">
+                    <!-- Stats Grid -->
+                    <div class="stats-grid mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div class="stat-number" id="totalProcessings">0</div>
+                            <div class="stat-label">Processing Events</div>
+                            <div class="stat-change positive" id="processingsChange">+0 this week</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="stat-number" id="totalProducts">0</div>
+                            <div class="stat-label">Products Processed</div>
+                            <div class="stat-change positive" id="productsChange">+0 this month</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-number" id="qualityScore">0</div>
+                            <div class="stat-label">Average Quality Score</div>
+                            <div class="stat-change positive" id="qualityChange">+0% improvement</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <div class="stat-number" id="activeBatches">0</div>
+                            <div class="stat-label">Active Batches</div>
+                            <div class="stat-change neutral" id="batchesChange">0 in progress</div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions mb-4">
+                        <button class="quick-action-btn" id="quickAddProcessing">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="quick-action-text">Add Processing Event</div>
+                        </button>
+                        <button class="quick-action-btn" id="quickScanBatch">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-qrcode"></i>
+                            </div>
+                            <div class="quick-action-text">Scan Batch ID</div>
+                        </button>
+                        <button class="quick-action-btn" id="quickViewEvents">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-list"></i>
+                            </div>
+                            <div class="quick-action-text">View All Events</div>
+                        </button>
+                        <button class="quick-action-btn" id="quickQualityReport">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="quick-action-text">Quality Report</div>
+                        </button>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="content-grid">
+                        <div class="content-card">
+                            <div class="content-card-header">
+                                <div class="content-card-icon primary">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <h5 class="content-card-title">Recent Processing Events</h5>
+                            </div>
+                            <div class="activity-feed" id="recentActivity">
+                                <div class="text-center py-3">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Loading recent activity...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div class="content-card-header">
+                                <div class="content-card-icon info">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <h5 class="content-card-title">Processing Methods</h5>
+                            </div>
+                            <div class="processing-methods" id="processingMethods">
+                                <div class="text-center py-3">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Loading processing methods...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Processing Events Section -->
+                <div id="processing-events-section" class="content-section d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4>Processing Events</h4>
+                        <button class="btn btn-dashboard btn-dashboard-primary" id="addProcessingEventBtn">
+                            <i class="fas fa-plus me-2"></i>Add Processing Event
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dashboard">
+                            <thead>
+                                <tr>
+                                    <th>Batch ID</th>
+                                    <th>Product Name</th>
+                                    <th>Processing Date</th>
+                                    <th>Method</th>
+                                    <th>Quality Score</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="processingEventsTableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Loading processing events...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Add Processing Event Section -->
+                <div id="add-processing-section" class="content-section d-none">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <div class="content-card-icon primary">
+                                        <i class="fas fa-plus-circle"></i>
+                                    </div>
+                                    <h5 class="content-card-title">Add Processing Event</h5>
+                                </div>
+                                <form id="addProcessingForm">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="batchId" class="form-label">Batch ID *</label>
+                                                <input type="text" class="form-control" id="batchId" placeholder="Scan or enter batch ID" required>
+                                                <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="scanBatchBtn">
+                                                    <i class="fas fa-qrcode me-1"></i>Scan QR Code
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="processingDate" class="form-label">Processing Date *</label>
+                                                <input type="datetime-local" class="form-control" id="processingDate" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="processingMethod" class="form-label">Processing Method *</label>
+                                                <select class="form-select" id="processingMethod" required>
+                                                    <option value="">Select Method</option>
+                                                    <option value="Washing">Washing</option>
+                                                    <option value="Cutting">Cutting</option>
+                                                    <option value="Blanching">Blanching</option>
+                                                    <option value="Freezing">Freezing</option>
+                                                    <option value="Drying">Drying</option>
+                                                    <option value="Canning">Canning</option>
+                                                    <option value="Packaging">Packaging</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="processingLocation" class="form-label">Processing Location *</label>
+                                                <input type="text" class="form-control" id="processingLocation" placeholder="e.g., Processing Plant A" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="qualityScore" class="form-label">Quality Score (1-10) *</label>
+                                                <input type="number" class="form-control" id="qualityScore" min="1" max="10" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="temperature" class="form-label">Temperature (°C)</label>
+                                                <input type="number" class="form-control" id="temperature" step="0.1">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="humidity" class="form-label">Humidity (%)</label>
+                                                <input type="number" class="form-control" id="humidity" min="0" max="100">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="processingNotes" class="form-label">Processing Notes</label>
+                                        <textarea class="form-control" id="processingNotes" rows="3" placeholder="Additional information about the processing..."></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="processingDocuments" class="form-label">Processing Documents</label>
+                                        <input type="file" class="form-control" id="processingDocuments" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                                        <div class="form-text">Upload quality reports, certificates, or photos (optional)</div>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-dashboard btn-dashboard-primary">
+                                            <i class="fas fa-save me-2"></i>Add Processing Event
+                                        </button>
+                                        <button type="button" class="btn btn-dashboard btn-dashboard-outline" id="cancelAddProcessing">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <div class="content-card-icon info">
+                                        <i class="fas fa-info-circle"></i>
+                                    </div>
+                                    <h5 class="content-card-title">Processing Guidelines</h5>
+                                </div>
+                                <div class="guidelines-content">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3">
+                                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                                            <strong>Batch ID:</strong> Scan the QR code on the product package
+                                        </li>
+                                        <li class="mb-3">
+                                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                                            <strong>Quality Score:</strong> Rate from 1-10 based on appearance, texture, and quality
+                                        </li>
+                                        <li class="mb-3">
+                                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                                            <strong>Temperature:</strong> Record processing temperature for quality tracking
+                                        </li>
+                                        <li class="mb-3">
+                                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                                            <strong>Documents:</strong> Upload quality reports and processing certificates
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quality Reports Section -->
+                <div id="quality-reports-section" class="content-section d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4>Quality Reports</h4>
+                        <button class="btn btn-outline-primary" id="refreshQualityBtn">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh
+                        </button>
+                    </div>
+
+
+                    <!-- Quality Metrics Overview -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <div class="content-card-icon success">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <h6 class="content-card-title">Average Quality</h6>
+                                </div>
+                                <div class="content-card-body">
+                                    <div class="metric-value" id="avgQualityScore">8.5</div>
+                                    <div class="metric-label">out of 10</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <div class="content-card-icon primary">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <h6 class="content-card-title">Processed Batches</h6>
+                                </div>
+                                <div class="content-card-body">
+                                    <div class="metric-value" id="processedBatches">24</div>
+                                    <div class="metric-label">total batches</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <div class="content-card-icon warning">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </div>
+                                    <h6 class="content-card-title">Quality Issues</h6>
+                                </div>
+                                <div class="content-card-body">
+                                    <div class="metric-value" id="qualityIssues">2</div>
+                                    <div class="metric-label">issues found</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <div class="content-card-icon info">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <h6 class="content-card-title">Quality Trend</h6>
+                                </div>
+                                <div class="content-card-body">
+                                    <div class="metric-value" id="qualityTrend">+5.2%</div>
+                                    <div class="metric-label">vs last month</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quality Charts -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <div class="content-card-icon primary">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </div>
+                                    <h6 class="content-card-title">Quality Score Distribution</h6>
+                                </div>
+                                <div class="content-card-body">
+                                    <canvas id="qualityDistributionChart" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <div class="content-card-icon success">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <h6 class="content-card-title">Quality Trend Over Time</h6>
+                                </div>
+                                <div class="content-card-body">
+                                    <canvas id="qualityTrendChart" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quality Details Table -->
+                    <div class="content-card">
+                        <div class="content-card-header">
+                            <div class="content-card-icon primary">
+                                <i class="fas fa-table"></i>
+                            </div>
+                            <h6 class="content-card-title">Quality Details</h6>
+                        </div>
+                        <div class="content-card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Batch ID</th>
+                                            <th>Product Name</th>
+                                            <th>Processing Date</th>
+                                            <th>Quality Score</th>
+                                            <th>Method</th>
+                                            <th>Temperature</th>
+                                            <th>Humidity</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="qualityDetailsTableBody">
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted">
+                                                <i class="fas fa-spinner fa-spin me-2"></i>
+                                                Loading quality data...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certifications Section - Hidden as requested -->
+                <!-- <div id="certifications-section" class="content-section d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4>Certifications</h4>
+                        <button class="btn btn-dashboard btn-dashboard-primary" id="uploadCertificationBtn">
+                            <i class="fas fa-upload me-2"></i>Upload Certification
+                        </button>
+                    </div>
+                    <div class="row" id="certificationsGrid">
+                        <div class="col-12 text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3 text-muted">Loading certifications...</p>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- Profile Section -->
+                <div id="profile-section" class="content-section d-none">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <div class="content-card-icon primary">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <h5 class="content-card-title">Profile Information</h5>
+                                </div>
+                                <form id="profileForm">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="profileCompanyName" class="form-label">Company/Processing Plant Name *</label>
+                                                <input type="text" class="form-control" id="profileCompanyName" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="profileRole" class="form-label">Role</label>
+                                                <input type="text" class="form-control" id="profileRole" value="Processor" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="profileAddress" class="form-label">Wallet Address</label>
+                                                <input type="text" class="form-control" id="profileAddress" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="profileStatus" class="form-label">Verification Status</label>
+                                                <input type="text" class="form-control" id="profileStatus" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="profileDescription" class="form-label">Processing Plant Description</label>
+                                        <textarea class="form-control" id="profileDescription" rows="4" placeholder="Describe your processing plant, capabilities, certifications, etc."></textarea>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-dashboard btn-dashboard-primary">
+                                            <i class="fas fa-save me-2"></i>Update Profile
+                                        </button>
+                                        <button type="button" class="btn btn-dashboard btn-dashboard-outline" id="refreshProfileBtn">
+                                            <i class="fas fa-refresh me-2"></i>Refresh
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <div class="content-card-icon info">
+                                        <i class="fas fa-chart-pie"></i>
+                                    </div>
+                                    <h5 class="content-card-title">Account Statistics</h5>
+                                </div>
+                                <div class="account-stats" id="accountStats">
+                                    <div class="text-center py-3">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Loading account stats...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notificationToast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="fas fa-info-circle text-primary me-2"></i>
+                <strong class="me-auto">AgriTrace</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                <!-- Toast message will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../assets/js/web3.min.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/blockchain.js"></script>
+    <script src="../assets/js/ipfs.js"></script>
+    <script src="../assets/js/qrcode.min.js"></script>
+    <script src="../assets/js/qr-scanner.min.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/dashboard.js"></script>
+    
+    <script>
+        // Processor-specific JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize global blockchain service
+            window.processorBlockchainService = new BlockchainService();
+            
+            // Initialize QR scanner for batch ID scanning
+            const scanBatchBtn = document.getElementById('scanBatchBtn');
+            const batchIdInput = document.getElementById('batchId');
+            
+            if (scanBatchBtn && batchIdInput) {
+                scanBatchBtn.addEventListener('click', function() {
+                    openQRScanner();
+                });
+            }
+            
+            // Add Processing Event form submission
+            const addProcessingForm = document.getElementById('addProcessingForm');
+            if (addProcessingForm) {
+                addProcessingForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    submitProcessingEvent();
+                });
+            }
+            
+            // Cancel button
+            const cancelBtn = document.getElementById('cancelAddProcessing');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', function() {
+                    resetProcessingForm();
+                    showSection('processing-events-section');
+                });
+            }
+            
+            // Quick action buttons
+            const quickAddProcessing = document.getElementById('quickAddProcessing');
+            if (quickAddProcessing) {
+                quickAddProcessing.addEventListener('click', function() {
+                    showSection('add-processing-section');
+                });
+            }
+            
+            const quickScanBatch = document.getElementById('quickScanBatch');
+            if (quickScanBatch) {
+                quickScanBatch.addEventListener('click', function() {
+                    showSection('add-processing-section');
+                    // Focus on batch ID input and trigger scan
+                    setTimeout(() => {
+                        const batchIdInput = document.getElementById('batchId');
+                        if (batchIdInput) {
+                            batchIdInput.focus();
+                            openQRScanner();
+                        }
+                    }, 100);
+                });
+            }
+            
+            const quickViewEvents = document.getElementById('quickViewEvents');
+            if (quickViewEvents) {
+                quickViewEvents.addEventListener('click', function() {
+                    showSection('processing-events-section');
+                });
+            }
+            
+            const quickQualityReport = document.getElementById('quickQualityReport');
+            if (quickQualityReport) {
+                quickQualityReport.addEventListener('click', function() {
+                    showSection('quality-reports-section');
+                    loadQualityReports();
+                });
+            }
+            
+            // Add Processing Event button
+            const addProcessingEventBtn = document.getElementById('addProcessingEventBtn');
+            if (addProcessingEventBtn) {
+                addProcessingEventBtn.addEventListener('click', function() {
+                    showSection('add-processing-section');
+                });
+            }
+            
+            // Connect Wallet button
+            const connectWalletBtn = document.getElementById('connectWalletBtn');
+            if (connectWalletBtn) {
+                connectWalletBtn.addEventListener('click', function() {
+                    connectWallet();
+                });
+            }
+            
+            // Initialize wallet connection on page load
+            initializeWallet();
+            
+            // Navigation event listeners
+            const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    
+                    // Allow external links (like Back to Home) to work normally
+                    if (href && (href.startsWith('../') || href.startsWith('http') || href.startsWith('/'))) {
+                        // Don't prevent default for external links
+                        return;
+                    }
+                    
+                    // Prevent default only for internal navigation
+                    e.preventDefault();
+                    
+                    if (href === '#processing-events') {
+                        showSection('processing-events-section');
+                        loadProcessingEvents();
+                    } else if (href === '#add-processing') {
+                        showSection('add-processing-section');
+                    } else if (href === '#overview') {
+                        showSection('overview-section');
+                    } else if (href === '#quality-reports') {
+                        showSection('quality-reports-section');
+                        loadQualityReports();
+                    } else if (href === '#certifications') {
+                        // Certifications section hidden as requested
+                        // showSection('certifications-section');
+                    } else if (href === '#profile') {
+                        showSection('profile-section');
+                    }
+                });
+            });
+            
+            // Quality Reports event handlers
+            const refreshQualityBtn = document.getElementById('refreshQualityBtn');
+            if (refreshQualityBtn) {
+                refreshQualityBtn.addEventListener('click', function() {
+                    loadQualityReports();
+                });
+            }
+            
+            
+            // QR Scanner functionality
+            function openQRScanner() {
+                try {
+                    // Check if QRScanner is available
+                    if (typeof QRScanner === 'undefined') {
+                        AgriTraceUtils.showToast('QR Scanner not available. Please refresh the page.', 'error');
+                        return;
+                    }
+                    
+                    // Check camera availability
+                    QrScanner.hasCamera().then(hasCamera => {
+                        if (!hasCamera) {
+                            // Show file upload fallback
+                            openQRFileUpload();
+                            return;
+                        }
+                        
+                        // Create QR scanner modal
+                        createQRScannerModal();
+                    }).catch(error => {
+                        console.error('Error checking camera:', error);
+                        // Fallback to file upload
+                        openQRFileUpload();
+                    });
+                    
+                } catch (error) {
+                    console.error('Error opening QR scanner:', error);
+                    AgriTraceUtils.showToast('Error opening QR scanner: ' + error.message, 'error');
+                }
+            }
+            
+            function createQRScannerModal() {
+                // Remove existing modal if any
+                const existingModal = document.getElementById('qrScannerModal');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+                
+                // Create modal HTML
+                const modalHTML = `
+                    <div class="modal fade" id="qrScannerModal" tabindex="-1" aria-labelledby="qrScannerModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="qrScannerModalLabel">
+                                        <i class="fas fa-qrcode me-2"></i>Scan QR Code
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <div id="scannerContainer">
+                                        <video id="scannerVideo" autoplay playsinline class="w-100" style="max-height: 400px;"></video>
+                                    </div>
+                                    <div id="scannerResult" class="mt-3 d-none">
+                                        <div class="alert alert-success">
+                                            <i class="fas fa-check-circle me-2"></i>
+                                            QR Code detected: <strong id="scannedBatchId"></strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-outline-primary" onclick="openQRFileUpload()">
+                                        <i class="fas fa-upload me-1"></i>Upload Image
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add modal to body
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                
+                // Show modal
+                const modal = new bootstrap.Modal(document.getElementById('qrScannerModal'));
+                modal.show();
+                
+                // Initialize scanner
+                initializeQRScanner();
+            }
+            
+            function initializeQRScanner() {
+                const video = document.getElementById('scannerVideo');
+                if (!video) {
+                    console.error('Video element not found');
+                    return;
+                }
+                
+                const qrScanner = new QrScanner(video, result => {
+                    handleQRScanSuccess(result);
+                }, {
+                    onDecodeError: error => {
+                        // Silently handle decode errors
+                    }
+                });
+                
+                // Start scanning
+                qrScanner.start().then(() => {
+                    console.log('QR Scanner started');
+                }).catch(error => {
+                    console.error('Error starting QR scanner:', error);
+                    AgriTraceUtils.showToast('Error starting camera: ' + error.message, 'error');
+                });
+                
+                // Store scanner reference for cleanup
+                window.currentQRScanner = qrScanner;
+                
+                // Clean up when modal is hidden
+                document.getElementById('qrScannerModal').addEventListener('hidden.bs.modal', function() {
+                    if (window.currentQRScanner) {
+                        window.currentQRScanner.destroy();
+                        window.currentQRScanner = null;
+                    }
+                });
+            }
+            
+            function openQRFileUpload() {
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = 'image/*';
+                fileInput.style.display = 'none';
+                
+                fileInput.addEventListener('change', function(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        processQRImage(file);
+                    }
+                });
+                
+                document.body.appendChild(fileInput);
+                fileInput.click();
+                document.body.removeChild(fileInput);
+            }
+            
+            function processQRImage(file) {
+                const img = new Image();
+                img.onload = function() {
+                    QrScanner.scanImage(img)
+                        .then(result => {
+                            handleQRScanSuccess(result);
+                        })
+                        .catch(error => {
+                            console.error('Error scanning QR from image:', error);
+                            AgriTraceUtils.showToast('No QR code found in image', 'error');
+                        });
+                };
+                
+                img.onerror = function() {
+                    AgriTraceUtils.showToast('Error loading image', 'error');
+                };
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            function handleQRScanSuccess(result) {
+                try {
+                    console.log('QR scan result:', result);
+                    
+                    // Extract batch ID from QR result
+                    let batchId = result.data || result;
+                    
+                    // If it's a URL, extract batch ID from query parameter
+                    if (batchId.includes('index.html?batch=')) {
+                        const url = new URL(batchId);
+                        batchId = url.searchParams.get('batch');
+                    }
+                    
+                    // Validate batch ID format
+                    if (!batchId || !batchId.match(/^[A-Z]+-\d{4}-\d{3}$/)) {
+                        AgriTraceUtils.showToast('Invalid QR code format', 'warning');
+                        return;
+                    }
+                    
+                    // Set batch ID in input field
+                    if (batchIdInput) {
+                        batchIdInput.value = batchId;
+                        batchIdInput.dispatchEvent(new Event('input')); // Trigger validation
+                    }
+                    
+                    // Show success message
+                    AgriTraceUtils.showToast('QR code scanned successfully!', 'success');
+                    
+                    // Hide modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('qrScannerModal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                    
+                } catch (error) {
+                    console.error('Error handling QR scan success:', error);
+                    AgriTraceUtils.showToast('Error processing QR code: ' + error.message, 'error');
+                }
+            }
+            
+            // Processing Event functions
+            function submitProcessingEvent() {
+                try {
+                    // Get form data
+                    const formData = getProcessingFormData();
+                    
+                    // Validate form data
+                    if (!validateProcessingForm(formData)) {
+                        return;
+                    }
+                    
+                    // Show loading state
+                    const submitBtn = document.querySelector('#addProcessingForm button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+                    submitBtn.disabled = true;
+                    
+                    // Submit to blockchain
+                    submitProcessingToBlockchain(formData)
+                        .then(() => {
+                            AgriTraceUtils.showToast('Processing event added successfully!', 'success');
+                            resetProcessingForm();
+                            showSection('processing-events-section');
+                            // Refresh events list
+                            loadProcessingEvents();
+                        })
+                        .catch(error => {
+                            console.error('Error submitting processing event:', error);
+                            AgriTraceUtils.showToast('Error adding processing event: ' + error.message, 'error');
+                        })
+                        .finally(() => {
+                            // Reset button state
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.disabled = false;
+                        });
+                        
+                } catch (error) {
+                    console.error('Error in submitProcessingEvent:', error);
+                    AgriTraceUtils.showToast('Error submitting processing event: ' + error.message, 'error');
+                }
+            }
+            
+            function getProcessingFormData() {
+                const batchId = document.getElementById('batchId');
+                const processingDate = document.getElementById('processingDate');
+                const processingMethod = document.getElementById('processingMethod');
+                const temperature = document.getElementById('temperature');
+                const humidity = document.getElementById('humidity');
+                // Use more specific selector to get the input element, not the div
+                const qualityScore = document.querySelector('#add-processing-section input[id="qualityScore"]');
+                const processingNotes = document.getElementById('processingNotes');
+                const processingLocation = document.getElementById('processingLocation');
+                const processingDocuments = document.getElementById('processingDocuments');
+                
+                // Debug logging
+                console.log('Quality Score element:', qualityScore);
+                console.log('Quality Score value:', qualityScore ? qualityScore.value : 'Element not found');
+                console.log('Quality Score value type:', typeof (qualityScore ? qualityScore.value : 'undefined'));
+                
+                const formData = {
+                    batchId: batchId ? batchId.value.trim() : '',
+                    processingDate: processingDate ? processingDate.value : '',
+                    method: processingMethod ? processingMethod.value.trim() : '',
+                    temperature: temperature ? temperature.value : '',
+                    humidity: humidity ? humidity.value : '',
+                    quality: qualityScore ? qualityScore.value : '',
+                    notes: processingNotes ? processingNotes.value.trim() : '',
+                    location: processingLocation ? processingLocation.value.trim() : '',
+                    documents: processingDocuments ? processingDocuments.files : null
+                };
+                
+                console.log('Complete form data:', formData);
+                return formData;
+            }
+            
+            function validateProcessingForm(data) {
+                // Debug logging
+                console.log('Form data for validation:', data);
+                console.log('Quality value:', data.quality, 'Type:', typeof data.quality);
+                
+                if (!data.batchId) {
+                    AgriTraceUtils.showToast('Batch ID is required', 'error');
+                    return false;
+                }
+                
+                if (!data.processingDate) {
+                    AgriTraceUtils.showToast('Processing Date is required', 'error');
+                    return false;
+                }
+                
+                if (!data.method) {
+                    AgriTraceUtils.showToast('Processing Method is required', 'error');
+                    return false;
+                }
+                
+                // Check if quality is empty or invalid
+                if (!data.quality || data.quality === '' || data.quality === null || data.quality === undefined) {
+                    AgriTraceUtils.showToast('Quality Score is required', 'error');
+                    return false;
+                }
+                
+                if (!data.location) {
+                    AgriTraceUtils.showToast('Processing Location is required', 'error');
+                    return false;
+                }
+                
+                // Convert to number and validate range
+                const qualityNum = parseFloat(data.quality);
+                if (isNaN(qualityNum) || qualityNum < 1 || qualityNum > 10) {
+                    AgriTraceUtils.showToast('Quality Score must be between 1 and 10', 'error');
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            async function submitProcessingToBlockchain(data) {
+                try {
+                    // Use global blockchain service
+                    const blockchainService = window.processorBlockchainService;
+                    
+                    // Connect wallet if not already connected
+                    if (!blockchainService.isConnected()) {
+                        console.log('Wallet not connected, attempting to connect...');
+                        await blockchainService.connectWallet();
+                    }
+                    
+                    // Check again after connection attempt
+                    if (!blockchainService.isConnected()) {
+                        throw new Error('Please connect your wallet first');
+                    }
+                    
+                    // Upload documents to IPFS if any
+                    let ipfsHash = '';
+                    if (data.documents && data.documents.length > 0) {
+                        console.log('Documents to upload:', data.documents);
+                        console.log('Documents type:', typeof data.documents);
+                        console.log('Documents is array:', Array.isArray(data.documents));
+                        console.log('Documents length:', data.documents.length);
+                        
+                        const ipfsService = new IPFSService();
+                        
+                        // Convert FileList to Array if needed
+                        const filesArray = Array.from(data.documents);
+                        console.log('Files array:', filesArray);
+                        
+                        const fileHashes = await ipfsService.uploadMultiple(filesArray);
+                        
+                        // Create metadata for multiple files
+                        const metadata = {
+                            type: 'processing_documents',
+                            files: fileHashes.map((hash, index) => ({
+                                hash: hash,
+                                filename: filesArray[index].name,
+                                size: filesArray[index].size,
+                                type: filesArray[index].type
+                            })),
+                            uploadDate: new Date().toISOString()
+                        };
+                        
+                        // Upload metadata as JSON
+                        const metadataBlob = new Blob([JSON.stringify(metadata, null, 2)], { type: 'application/json' });
+                        ipfsHash = await ipfsService.uploadFile(metadataBlob);
+                    }
+                    
+                    // Prepare event data
+                    const eventData = {
+                        batchId: data.batchId,
+                        eventType: 'PROCESSING', // EventType.PROCESSING
+                        location: data.location,
+                        ipfsHash: ipfsHash,
+                        notes: `Method: ${data.method}, Temperature: ${data.temperature || 'N/A'}°C, Humidity: ${data.humidity || 'N/A'}%, Quality: ${data.quality}/10. ${data.notes}`
+                    };
+                    
+                    // Add event to blockchain
+                    await blockchainService.addEvent(
+                        eventData.batchId,
+                        eventData.eventType,
+                        eventData.location,
+                        eventData.ipfsHash,
+                        eventData.notes
+                    );
+                    
+                } catch (error) {
+                    console.error('Error submitting to blockchain:', error);
+                    throw error;
+                }
+            }
+            
+            function resetProcessingForm() {
+                const form = document.getElementById('addProcessingForm');
+                if (form) {
+                    form.reset();
+                }
+            }
+            
+            function showSection(sectionId) {
+                // Hide all sections
+                const sections = document.querySelectorAll('.content-section');
+                sections.forEach(section => {
+                    section.classList.add('d-none');
+                });
+                
+                // Show target section
+                const targetSection = document.getElementById(sectionId);
+                if (targetSection) {
+                    targetSection.classList.remove('d-none');
+                }
+                
+                // Update navigation
+                const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                });
+                
+                const targetLink = document.querySelector(`[href="#${sectionId.replace('-section', '')}"]`);
+                if (targetLink) {
+                    targetLink.classList.add('active');
+                }
+            }
+            
+            async function loadProcessingEvents() {
+                try {
+                    console.log('Loading processing events...');
+                    
+                    const tbody = document.getElementById('processingEventsTableBody');
+                    if (!tbody) {
+                        console.error('Processing events table body not found');
+                        return;
+                    }
+                    
+                    // Show loading state
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">
+                                <i class="fas fa-spinner fa-spin me-2"></i>Loading processing events...
+                            </td>
+                        </tr>
+                    `;
+                    
+                    // Use global blockchain service
+                    const blockchainService = window.processorBlockchainService;
+                    
+                    if (!blockchainService.isConnected()) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="7" class="text-center text-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>Please connect your wallet to view events
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                    
+                    // Get all batch IDs
+                    let batchIds = [];
+                    try {
+                        batchIds = await blockchainService.getAllBatchIds();
+                        console.log('Found batch IDs:', batchIds);
+                    } catch (error) {
+                        console.warn('Could not get batch IDs:', error);
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    <i class="fas fa-inbox me-2"></i>No products found
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                    
+                    if (batchIds.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    <i class="fas fa-inbox me-2"></i>No products found
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                    
+                    // Load all processing events
+                    const allEvents = [];
+                    for (const batchId of batchIds) {
+                        try {
+                            // Get product info
+                            const product = await blockchainService.getProduct(batchId);
+                            
+                            // Get events for this product
+                            const events = await blockchainService.getEvents(batchId);
+                            console.log(`Events for ${batchId}:`, events);
+                            
+                            // For debugging: show all events first, then filter for processing events
+                            console.log(`All events for ${batchId}:`, events);
+                            
+                            // Filter for processing events only (eventType = 1)
+                            const processingEvents = events.filter(event => {
+                                console.log(`Event ${event.eventId}: eventType="${event.eventType}", eventTypeValue=${event.eventTypeValue}`);
+                                // Only show PROCESSING events (eventType = 1)
+                                return event.eventType === '1' || event.eventTypeValue === 1;
+                            });
+                            
+                            console.log(`Filtered ${processingEvents.length} processing events from ${events.length} total events for ${batchId}`);
+                            
+                            // Add product info to events
+                            processingEvents.forEach(event => {
+                                event.productName = product.productName;
+                                event.batchId = product.batchId;
+                            });
+                            
+                            allEvents.push(...processingEvents);
+                        } catch (error) {
+                            console.warn(`Error loading events for ${batchId}:`, error);
+                        }
+                    }
+                    
+                    console.log('All processing events:', allEvents);
+                    
+                    // Display events
+                    if (allEvents.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    <i class="fas fa-cogs me-2"></i>No processing events found
+                                    <br><small class="text-muted">Only PROCESSING events (eventType = 1) are displayed here</small>
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                    
+                    // Sort events by timestamp (newest first)
+                    allEvents.sort((a, b) => parseInt(b.timestamp) - parseInt(a.timestamp));
+                    
+                    // Generate table rows
+                    const eventsHtml = allEvents.map(event => {
+                        const eventDate = new Date(parseInt(event.timestamp) * 1000).toLocaleDateString();
+                        const eventTime = new Date(parseInt(event.timestamp) * 1000).toLocaleTimeString();
+                        const qualityScore = event.notes.match(/Quality: (\d+)\/10/);
+                        const method = event.notes.match(/Method: ([^,]+)/);
+                        
+                        // Get event type name
+                        const eventTypeNames = {
+                            '0': 'HARVEST',
+                            '1': 'PROCESSING', 
+                            '2': 'TRANSPORT_START',
+                            '3': 'TRANSPORT_END',
+                            '4': 'WAREHOUSE_IN',
+                            '5': 'WAREHOUSE_OUT',
+                            '6': 'RETAIL_RECEIVE',
+                            '7': 'SALE'
+                        };
+                        const eventTypeName = eventTypeNames[event.eventType] || event.eventType || 'UNKNOWN';
+                        
+                        return `
+                            <tr>
+                                <td><code>${AgriTraceUtils.sanitizeHtml(event.batchId)}</code></td>
+                                <td>${AgriTraceUtils.sanitizeHtml(event.productName)}</td>
+                                <td>${eventDate} ${eventTime}</td>
+                                <td>
+                                    <span class="badge bg-info">${eventTypeName}</span>
+                                    ${method ? `<br><small>${AgriTraceUtils.sanitizeHtml(method[1])}</small>` : ''}
+                                </td>
+                                <td>
+                                    <span class="badge bg-${qualityScore ? (parseInt(qualityScore[1]) >= 8 ? 'success' : parseInt(qualityScore[1]) >= 6 ? 'warning' : 'danger') : 'secondary'}">
+                                        ${qualityScore ? qualityScore[1] + '/10' : 'N/A'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">Completed</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewEventDetails('${event.batchId}', ${event.eventId})" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    ${event.ipfsHash ? `
+                                        <button class="btn btn-sm btn-outline-info" onclick="viewEventDocuments('${event.ipfsHash}')" title="View Documents">
+                                            <i class="fas fa-file-alt"></i>
+                                        </button>
+                                    ` : ''}
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                    
+                    tbody.innerHTML = eventsHtml;
+                    console.log('Processing events loaded successfully');
+                    
+                } catch (error) {
+                    console.error('Error loading processing events:', error);
+                    const tbody = document.getElementById('processingEventsTableBody');
+                    if (tbody) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="7" class="text-center text-danger">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>Error loading events: ${error.message}
+                                </td>
+                            </tr>
+                        `;
+                    }
+                }
+            }
+            
+            // Event detail functions
+            async function viewEventDetails(batchId, eventId) {
+                try {
+                    console.log('Viewing event details for:', batchId, eventId);
+                    
+                    const blockchainService = window.processorBlockchainService;
+                    if (!blockchainService.isConnected()) {
+                        AgriTraceUtils.showToast('Please connect your wallet first', 'error');
+                        return;
+                    }
+                    
+                    // Get product info
+                    const product = await blockchainService.getProduct(batchId);
+                    
+                    // Get all events for this product
+                    const events = await blockchainService.getEvents(batchId);
+                    
+                    // Find the specific event
+                    const event = events.find(e => e.eventId == eventId);
+                    if (!event) {
+                        AgriTraceUtils.showToast('Event not found', 'error');
+                        return;
+                    }
+                    
+                    // Create and show event details modal
+                    showEventDetailsModal(product, event, events);
+                    
+                } catch (error) {
+                    console.error('Error viewing event details:', error);
+                    AgriTraceUtils.showToast('Error loading event details: ' + error.message, 'error');
+                }
+            }
+            
+            async function viewEventDocuments(ipfsHash) {
+                try {
+                    console.log('Viewing event documents for:', ipfsHash);
+                    
+                    if (!ipfsHash || ipfsHash === '') {
+                        AgriTraceUtils.showToast('No documents available for this event', 'info');
+                        return;
+                    }
+                    
+                    const ipfsService = new IPFSService();
+                    
+                    // Show loading
+                    AgriTraceUtils.showToast('Loading documents...', 'info');
+                    
+                    // Fetch metadata from IPFS
+                    const metadata = await ipfsService.getJSON(ipfsHash);
+                    
+                    if (!metadata) {
+                        AgriTraceUtils.showToast('Could not load document metadata', 'error');
+                        return;
+                    }
+                    
+                    // Create and show document viewer modal
+                    showDocumentViewerModal(metadata, ipfsService);
+                    
+                } catch (error) {
+                    console.error('Error viewing event documents:', error);
+                    AgriTraceUtils.showToast('Error loading documents: ' + error.message, 'error');
+                }
+            }
+            
+            // Modal functions
+            function showEventDetailsModal(product, event, allEvents) {
+                // Remove existing modal if any
+                const existingModal = document.getElementById('eventDetailsModal');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+                
+                // Get event type name
+                const eventTypeNames = {
+                    '0': 'HARVEST',
+                    '1': 'PROCESSING', 
+                    '2': 'TRANSPORT_START',
+                    '3': 'TRANSPORT_END',
+                    '4': 'WAREHOUSE_IN',
+                    '5': 'WAREHOUSE_OUT',
+                    '6': 'RETAIL_RECEIVE',
+                    '7': 'SALE'
+                };
+                const eventTypeName = eventTypeNames[event.eventType] || event.eventType || 'UNKNOWN';
+                
+                // Parse event details from notes
+                const qualityScore = event.notes.match(/Quality: (\d+)\/10/);
+                const method = event.notes.match(/Method: ([^,]+)/);
+                const temperature = event.notes.match(/Temperature: ([^°]+)°C/);
+                const humidity = event.notes.match(/Humidity: ([^%]+)%/);
+                
+                // Create timeline of all events
+                const timelineHtml = allEvents
+                    .sort((a, b) => parseInt(a.timestamp) - parseInt(b.timestamp))
+                    .map(e => {
+                        const eventDate = new Date(parseInt(e.timestamp) * 1000).toLocaleDateString();
+                        const eventTime = new Date(parseInt(e.timestamp) * 1000).toLocaleTimeString();
+                        const eTypeName = eventTypeNames[e.eventType] || e.eventType || 'UNKNOWN';
+                        const isCurrentEvent = e.eventId == event.eventId;
+                        
+                        return `
+                            <div class="timeline-item ${isCurrentEvent ? 'active' : ''}">
+                                <div class="timeline-marker ${isCurrentEvent ? 'bg-primary' : 'bg-secondary'}"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-1">${eTypeName}</h6>
+                                    <p class="mb-1 text-muted">${eventDate} ${eventTime}</p>
+                                    <p class="mb-0 small">${AgriTraceUtils.sanitizeHtml(e.location || 'N/A')}</p>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                
+                const modalHTML = `
+                    <div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="eventDetailsModalLabel">
+                                        <i class="fas fa-info-circle me-2"></i>Event Details
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6 class="text-primary">Product Information</h6>
+                                            <table class="table table-sm">
+                                                <tr><td><strong>Batch ID:</strong></td><td><code>${AgriTraceUtils.sanitizeHtml(product.batchId)}</code></td></tr>
+                                                <tr><td><strong>Product Name:</strong></td><td>${AgriTraceUtils.sanitizeHtml(product.productName)}</td></tr>
+                                                <tr><td><strong>Origin:</strong></td><td>${AgriTraceUtils.sanitizeHtml(product.origin)}</td></tr>
+                                                <tr><td><strong>Farmer:</strong></td><td>${AgriTraceUtils.formatAddress(product.farmer)}</td></tr>
+                                            </table>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6 class="text-primary">Event Information</h6>
+                                            <table class="table table-sm">
+                                                <tr><td><strong>Event Type:</strong></td><td><span class="badge bg-info">${eventTypeName}</span></td></tr>
+                                                <tr><td><strong>Event ID:</strong></td><td>${event.eventId}</td></tr>
+                                                <tr><td><strong>Date:</strong></td><td>${new Date(parseInt(event.timestamp) * 1000).toLocaleString()}</td></tr>
+                                                <tr><td><strong>Location:</strong></td><td>${AgriTraceUtils.sanitizeHtml(event.location || 'N/A')}</td></tr>
+                                                <tr><td><strong>Actor:</strong></td><td>${AgriTraceUtils.formatAddress(event.actor)}</td></tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    ${method || temperature || humidity || qualityScore ? `
+                                        <div class="mt-3">
+                                            <h6 class="text-primary">Processing Details</h6>
+                                            <div class="row">
+                                                ${method ? `<div class="col-md-3"><strong>Method:</strong><br>${AgriTraceUtils.sanitizeHtml(method[1])}</div>` : ''}
+                                                ${temperature ? `<div class="col-md-3"><strong>Temperature:</strong><br>${AgriTraceUtils.sanitizeHtml(temperature[1])}°C</div>` : ''}
+                                                ${humidity ? `<div class="col-md-3"><strong>Humidity:</strong><br>${AgriTraceUtils.sanitizeHtml(humidity[1])}%</div>` : ''}
+                                                ${qualityScore ? `<div class="col-md-3"><strong>Quality Score:</strong><br><span class="badge bg-${parseInt(qualityScore[1]) >= 8 ? 'success' : parseInt(qualityScore[1]) >= 6 ? 'warning' : 'danger'}">${qualityScore[1]}/10</span></div>` : ''}
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    <div class="mt-3">
+                                        <h6 class="text-primary">Notes</h6>
+                                        <p class="text-muted">${AgriTraceUtils.sanitizeHtml(event.notes || 'No notes available')}</p>
+                                    </div>
+                                    
+                                    <div class="mt-3">
+                                        <h6 class="text-primary">Supply Chain Timeline</h6>
+                                        <div class="timeline">
+                                            ${timelineHtml}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    ${event.ipfsHash ? `
+                                        <button type="button" class="btn btn-outline-info" onclick="viewEventDocuments('${event.ipfsHash}')">
+                                            <i class="fas fa-file-alt me-1"></i>View Documents
+                                        </button>
+                                    ` : ''}
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add modal to body
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                
+                // Show modal
+                const modal = new bootstrap.Modal(document.getElementById('eventDetailsModal'));
+                modal.show();
+                
+                // Clean up when modal is hidden
+                document.getElementById('eventDetailsModal').addEventListener('hidden.bs.modal', function() {
+                    this.remove();
+                });
+            }
+            
+            function showDocumentViewerModal(metadata, ipfsService) {
+                // Remove existing modal if any
+                const existingModal = document.getElementById('documentViewerModal');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+                
+                // Create document list
+                const documentsHtml = metadata.files.map(file => {
+                    const fileSize = (file.size / 1024).toFixed(2) + ' KB';
+                    const fileIcon = getFileIcon(file.type);
+                    
+                    return `
+                        <div class="document-item border rounded p-3 mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="document-icon me-3">
+                                    <i class="${fileIcon} fa-2x text-primary"></i>
+                                </div>
+                                <div class="document-info flex-grow-1">
+                                    <h6 class="mb-1">${AgriTraceUtils.sanitizeHtml(file.filename)}</h6>
+                                    <p class="mb-1 text-muted small">Size: ${fileSize} | Type: ${file.type}</p>
+                                    <p class="mb-0 small text-muted">Hash: <code>${file.hash}</code></p>
+                                </div>
+                                <div class="document-actions">
+                                    <a href="${ipfsService.getIPFSUrl(file.hash)}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-external-link-alt me-1"></i>View
+                                    </a>
+                                    <button class="btn btn-outline-success btn-sm ms-1" onclick="downloadFromIPFS('${file.hash}', '${file.filename}')">
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                const modalHTML = `
+                    <div class="modal fade" id="documentViewerModal" tabindex="-1" aria-labelledby="documentViewerModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="documentViewerModalLabel">
+                                        <i class="fas fa-file-alt me-2"></i>Event Documents
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <h6 class="text-primary">Processing Documents</h6>
+                                        <p class="text-muted small">Uploaded on: ${new Date(metadata.uploadDate).toLocaleString()}</p>
+                                    </div>
+                                    
+                                    <div class="documents-list">
+                                        ${documentsHtml}
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add modal to body
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                
+                // Show modal
+                const modal = new bootstrap.Modal(document.getElementById('documentViewerModal'));
+                modal.show();
+                
+                // Clean up when modal is hidden
+                document.getElementById('documentViewerModal').addEventListener('hidden.bs.modal', function() {
+                    this.remove();
+                });
+            }
+            
+            function getFileIcon(fileType) {
+                if (fileType.startsWith('image/')) return 'fas fa-image';
+                if (fileType.includes('pdf')) return 'fas fa-file-pdf';
+                if (fileType.includes('word') || fileType.includes('document')) return 'fas fa-file-word';
+                if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'fas fa-file-excel';
+                if (fileType.includes('text')) return 'fas fa-file-alt';
+                return 'fas fa-file';
+            }
+            
+            function downloadFromIPFS(hash, filename) {
+                const ipfsService = new IPFSService();
+                const url = ipfsService.getIPFSUrl(hash);
+                
+                // Create temporary link and trigger download
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            // Make functions globally accessible
+            window.viewEventDetails = viewEventDetails;
+            window.viewEventDocuments = viewEventDocuments;
+            window.downloadFromIPFS = downloadFromIPFS;
+            
+            // Wallet connection functions
+            async function initializeWallet() {
+                try {
+                    // Use global blockchain service
+                    const blockchainService = window.processorBlockchainService;
+                    
+                    // Check if already connected
+                    if (blockchainService.isConnected()) {
+                        console.log('Wallet already connected:', blockchainService.account);
+                        updateWalletUI(true, blockchainService.account);
+                        await loadUserInfo(blockchainService.account);
+                        return;
+                    }
+                    
+                    // Check if MetaMask is installed
+                    if (typeof window.ethereum === 'undefined') {
+                        console.log('MetaMask not installed');
+                        updateWalletUI(false, 'MetaMask not installed');
+                        return;
+                    }
+                    
+                    // Check if already connected via MetaMask
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        console.log('MetaMask connected, initializing blockchain service...');
+                        await blockchainService.connectWallet();
+                        updateWalletUI(true, accounts[0]);
+                        await loadUserInfo(accounts[0]);
+                        return;
+                    }
+                    
+                    // Not connected
+                    updateWalletUI(false, 'Not connected');
+                    
+                } catch (error) {
+                    console.error('Error initializing wallet:', error);
+                    updateWalletUI(false, 'Connection error');
+                }
+            }
+            
+            async function connectWallet() {
+                try {
+                    // Use global blockchain service
+                    const account = await window.processorBlockchainService.connectWallet();
+                    
+                    if (account) {
+                        console.log('Wallet connected:', account);
+                        updateWalletUI(true, account);
+                        AgriTraceUtils.showToast('Wallet connected successfully!', 'success');
+                        
+                        // Load user info
+                        await loadUserInfo(account);
+                    } else {
+                        throw new Error('No accounts found');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error connecting wallet:', error);
+                    AgriTraceUtils.showToast('Failed to connect wallet: ' + error.message, 'error');
+                    updateWalletUI(false, 'Connection failed');
+                }
+            }
+            
+            function updateWalletUI(connected, address) {
+                const connectBtn = document.getElementById('connectWalletBtn');
+                const userName = document.getElementById('userName');
+                const userRole = document.getElementById('userRole');
+                const userAvatar = document.getElementById('userAvatar');
+                
+                if (connected && address) {
+                    // Update button
+                    if (connectBtn) {
+                        connectBtn.innerHTML = '<i class="fas fa-check me-1"></i>Connected';
+                        connectBtn.classList.remove('btn-outline-primary');
+                        connectBtn.classList.add('btn-success');
+                    }
+                    
+                    // Update user info
+                    if (userName) {
+                        userName.textContent = address.substring(0, 6) + '...' + address.substring(address.length - 4);
+                    }
+                    
+                    if (userRole) {
+                        userRole.textContent = 'PROCESSOR';
+                    }
+                    
+                    if (userAvatar) {
+                        userAvatar.textContent = 'P';
+                    }
+                } else {
+                    // Reset to disconnected state
+                    if (connectBtn) {
+                        connectBtn.innerHTML = '<i class="fas fa-wallet me-1"></i>Connect Wallet';
+                        connectBtn.classList.remove('btn-success');
+                        connectBtn.classList.add('btn-outline-primary');
+                    }
+                    
+                    if (userName) {
+                        userName.textContent = 'Not Connected';
+                    }
+                    
+                    if (userRole) {
+                        userRole.textContent = 'PROCESSOR';
+                    }
+                    
+                    if (userAvatar) {
+                        userAvatar.textContent = 'P';
+                    }
+                }
+            }
+            
+            async function loadUserInfo(address) {
+                try {
+                    // Use global blockchain service
+                    const blockchainService = window.processorBlockchainService;
+                    
+                    // Check if user is registered
+                    const userInfo = await blockchainService.getUser(address);
+                    
+                    if (userInfo && userInfo.userAddress !== '0x0000000000000000000000000000000000000000') {
+                        // User is registered
+                        console.log('User info loaded:', userInfo);
+                        
+                        // Update UI with user info
+                        const userName = document.getElementById('userName');
+                        if (userName) {
+                            userName.textContent = userInfo.companyName || address.substring(0, 6) + '...' + address.substring(address.length - 4);
+                        }
+                        
+                        // Check if user is verified and active
+                        if (!userInfo.isVerified) {
+                            AgriTraceUtils.showToast('Your account is not verified yet. Please contact admin.', 'warning');
+                        }
+                        
+                        if (!userInfo.isActive) {
+                            AgriTraceUtils.showToast('Your account is inactive. Please contact admin.', 'error');
+                        }
+                        
+                    } else {
+                        // User not registered
+                        console.log('User not registered');
+                        AgriTraceUtils.showToast('User not registered. Please register first.', 'warning');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error loading user info:', error);
+                    // Don't show error toast as this might be expected for unregistered users
+                }
+            }
+            
+            // Quality Reports Functions
+            async function loadQualityReports() {
+                try {
+                    console.log('Loading quality reports...');
+                    
+                    // Use global blockchain service
+                    const blockchainService = window.processorBlockchainService;
+                    
+                    if (!blockchainService.isConnected()) {
+                        AgriTraceUtils.showToast('Please connect your wallet first', 'error');
+                        return;
+                    }
+                    
+                    // Get all batch IDs
+                    let batchIds = [];
+                    try {
+                        batchIds = await blockchainService.getAllBatchIds();
+                        console.log('Found batch IDs:', batchIds);
+                    } catch (error) {
+                        console.warn('Could not get batch IDs:', error);
+                        updateQualityMetrics([]);
+                        updateQualityCharts([]);
+                        updateQualityTable([]);
+                        return;
+                    }
+                    
+                    if (batchIds.length === 0) {
+                        updateQualityMetrics([]);
+                        updateQualityCharts([]);
+                        updateQualityTable([]);
+                        return;
+                    }
+                    
+                    // Load all processing events (same logic as loadProcessingEvents)
+                    const allEvents = [];
+                    for (const batchId of batchIds) {
+                        try {
+                            // Get product info
+                            const product = await blockchainService.getProduct(batchId);
+                            
+                            // Get events for this product
+                            const events = await blockchainService.getEvents(batchId);
+                            
+                            // Filter for processing events only (eventType = 1)
+                            const processingEvents = events.filter(event => 
+                                event.eventType === '1' || event.eventTypeValue === 1
+                            );
+                            
+                            // Add product info to events
+                            processingEvents.forEach(event => {
+                                event.productName = product.productName;
+                                event.batchId = product.batchId;
+                            });
+                            
+                            allEvents.push(...processingEvents);
+                        } catch (error) {
+                            console.warn(`Error loading events for ${batchId}:`, error);
+                        }
+                    }
+                    
+                    console.log('All processing events for quality reports:', allEvents);
+                    
+                    // Convert processing events to quality data
+                    const qualityData = [];
+                    allEvents.forEach(event => {
+                        console.log('Processing event for quality data:', event);
+                        console.log('Event timestamp:', event.timestamp, 'Type:', typeof event.timestamp);
+                        
+                        const qualityScore = event.notes.match(/Quality: (\d+)\/10/);
+                        const method = event.notes.match(/Method: ([^,]+)/);
+                        const tempMatch = event.notes.match(/Temperature: ([^°]+)°C/);
+                        const humidityMatch = event.notes.match(/Humidity: ([^%]+)%/);
+                        
+                        console.log('Quality score match:', qualityScore);
+                        
+                        if (qualityScore) {
+                            // Handle different timestamp formats
+                            let processingDate;
+                            
+                            if (event.timestamp instanceof Date) {
+                                // Already a Date object
+                                processingDate = event.timestamp;
+                                console.log('Using existing Date object:', processingDate);
+                            } else if (typeof event.timestamp === 'string') {
+                                // String timestamp - try to parse
+                                const timestamp = parseInt(event.timestamp);
+                                if (isNaN(timestamp) || timestamp <= 0) {
+                                    console.warn('Invalid string timestamp:', event.timestamp);
+                                    processingDate = new Date(); // Use current date as fallback
+                                } else {
+                                    processingDate = new Date(timestamp * 1000);
+                                }
+                            } else if (typeof event.timestamp === 'number') {
+                                // Number timestamp
+                                if (isNaN(event.timestamp) || event.timestamp <= 0) {
+                                    console.warn('Invalid number timestamp:', event.timestamp);
+                                    processingDate = new Date(); // Use current date as fallback
+                                } else {
+                                    processingDate = new Date(event.timestamp * 1000);
+                                }
+                            } else {
+                                console.warn('Unknown timestamp format:', event.timestamp);
+                                processingDate = new Date(); // Use current date as fallback
+                            }
+                            
+                            // Validate the final date
+                            if (isNaN(processingDate.getTime())) {
+                                console.warn('Invalid processing date, using current date as fallback');
+                                processingDate = new Date();
+                            }
+                            
+                            console.log('Final processing date:', processingDate);
+                            
+                            qualityData.push({
+                                batchId: event.batchId,
+                                productName: event.productName,
+                                processingDate: processingDate,
+                                qualityScore: parseInt(qualityScore[1]),
+                                method: method ? method[1] : 'Unknown',
+                                temperature: tempMatch ? tempMatch[1] : 'N/A',
+                                humidity: humidityMatch ? humidityMatch[1] : 'N/A',
+                                status: parseInt(qualityScore[1]) >= 8 ? 'Excellent' : 
+                                       parseInt(qualityScore[1]) >= 6 ? 'Good' : 'Poor'
+                            });
+                        } else {
+                            console.log('No quality score found in notes:', event.notes);
+                        }
+                    });
+                    
+                    console.log('Quality data loaded:', qualityData);
+                    console.log('Total quality data items:', qualityData.length);
+                    
+                    // Update metrics
+                    updateQualityMetrics(qualityData);
+                    
+                    // Update charts
+                    updateQualityCharts(qualityData);
+                    
+                    // Update table
+                    updateQualityTable(qualityData);
+                    
+                    
+                } catch (error) {
+                    console.error('Error loading quality reports:', error);
+                    AgriTraceUtils.showToast('Error loading quality reports: ' + error.message, 'error');
+                }
+            }
+            
+            function updateQualityMetrics(qualityData) {
+                if (qualityData.length === 0) {
+                    document.getElementById('avgQualityScore').textContent = '0.0';
+                    document.getElementById('processedBatches').textContent = '0';
+                    document.getElementById('qualityIssues').textContent = '0';
+                    document.getElementById('qualityTrend').textContent = '0%';
+                    return;
+                }
+                
+                // Calculate average quality
+                const avgQuality = qualityData.reduce((sum, item) => sum + item.qualityScore, 0) / qualityData.length;
+                document.getElementById('avgQualityScore').textContent = avgQuality.toFixed(1);
+                
+                // Count processed batches
+                const uniqueBatches = new Set(qualityData.map(item => item.batchId));
+                document.getElementById('processedBatches').textContent = uniqueBatches.size;
+                
+                // Count quality issues (score < 6)
+                const issues = qualityData.filter(item => item.qualityScore < 6).length;
+                document.getElementById('qualityIssues').textContent = issues;
+                
+                // Calculate trend (mock data for now)
+                document.getElementById('qualityTrend').textContent = '+5.2%';
+            }
+            
+            function updateQualityCharts(qualityData) {
+                // Quality Distribution Chart
+                const distributionCtx = document.getElementById('qualityDistributionChart');
+                if (distributionCtx) {
+                    const distributionData = {
+                        'Excellent (8-10)': qualityData.filter(item => item.qualityScore >= 8).length,
+                        'Good (6-7)': qualityData.filter(item => item.qualityScore >= 6 && item.qualityScore < 8).length,
+                        'Poor (1-5)': qualityData.filter(item => item.qualityScore < 6).length
+                    };
+                    
+                    new Chart(distributionCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: Object.keys(distributionData),
+                            datasets: [{
+                                data: Object.values(distributionData),
+                                backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+                                borderWidth: 2,
+                                borderColor: '#fff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                // Quality Trend Chart
+                const trendCtx = document.getElementById('qualityTrendChart');
+                if (trendCtx) {
+                    // Group data by date
+                    const dailyData = {};
+                    qualityData.forEach(item => {
+                        // Validate processingDate before using toISOString()
+                        if (!item.processingDate || isNaN(item.processingDate.getTime())) {
+                            console.warn('Invalid processingDate for item:', item);
+                            return;
+                        }
+                        
+                        const date = item.processingDate.toISOString().split('T')[0];
+                        if (!dailyData[date]) {
+                            dailyData[date] = [];
+                        }
+                        dailyData[date].push(item.qualityScore);
+                    });
+                    
+                    const dates = Object.keys(dailyData).sort();
+                    const avgScores = dates.map(date => {
+                        const scores = dailyData[date];
+                        return scores.reduce((sum, score) => sum + score, 0) / scores.length;
+                    });
+                    
+                    new Chart(trendCtx, {
+                        type: 'line',
+                        data: {
+                            labels: dates,
+                            datasets: [{
+                                label: 'Average Quality Score',
+                                data: avgScores,
+                                borderColor: '#28a745',
+                                backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 10
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+            
+            function updateQualityTable(qualityData) {
+                const tbody = document.getElementById('qualityDetailsTableBody');
+                if (!tbody) return;
+                
+                if (qualityData.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">
+                                <i class="fas fa-inbox me-2"></i>No quality data found
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                // Sort by processing date (newest first)
+                qualityData.sort((a, b) => {
+                    // Handle invalid dates
+                    const dateA = a.processingDate && !isNaN(a.processingDate.getTime()) ? a.processingDate : new Date(0);
+                    const dateB = b.processingDate && !isNaN(b.processingDate.getTime()) ? b.processingDate : new Date(0);
+                    return dateB - dateA;
+                });
+                
+                const rowsHtml = qualityData.map(item => `
+                    <tr>
+                        <td><code>${AgriTraceUtils.sanitizeHtml(item.batchId)}</code></td>
+                        <td>${AgriTraceUtils.sanitizeHtml(item.productName)}</td>
+                        <td>${item.processingDate && !isNaN(item.processingDate.getTime()) ? item.processingDate.toLocaleDateString() : 'Invalid Date'}</td>
+                        <td>
+                            <span class="badge bg-${item.qualityScore >= 8 ? 'success' : item.qualityScore >= 6 ? 'warning' : 'danger'}">
+                                ${item.qualityScore}/10
+                            </span>
+                        </td>
+                        <td>${AgriTraceUtils.sanitizeHtml(item.method)}</td>
+                        <td>${item.temperature}</td>
+                        <td>${item.humidity}</td>
+                        <td>
+                            <span class="badge bg-${item.status === 'Excellent' ? 'success' : item.status === 'Good' ? 'warning' : 'danger'}">
+                                ${item.status}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                tbody.innerHTML = rowsHtml;
+            }
+            
+            
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple getRegisteredUsers() Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Simple getRegisteredUsers() Test</h1>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Test Instructions</h5>
+                    </div>
+                    <div class="card-body">
+                        <ol>
+                            <li>Open browser console (F12)</li>
+                            <li>Click "Connect Wallet" below</li>
+                            <li>Run test commands in console</li>
+                        </ol>
+                        
+                        <button id="connectBtn" class="btn btn-primary">Connect Wallet</button>
+                        <span id="status" class="ms-2"></span>
+                        
+                        <hr>
+                        
+                        <h6>Console Commands:</h6>
+                        <div class="bg-light p-3">
+                            <code>
+                                // Test getRegisteredUsers()<br>
+                                await testGetRegisteredUsers()<br><br>
+                                
+                                // Test with specific user<br>
+                                await testGetUserDetails('0x...')<br><br>
+                                
+                                // Test contract info<br>
+                                await testContractInfo()
+                            </code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/web3.min.js"></script>
+    <script src="assets/js/blockchain.js?v=2"></script>
+
+    <script>
+        let blockchainService = null;
+        let contract = null;
+
+        document.getElementById('connectBtn').addEventListener('click', async () => {
+            try {
+                console.log('Connecting wallet...');
+                blockchainService = new BlockchainService();
+                await blockchainService.connectWallet();
+                
+                contract = blockchainService.contract;
+                document.getElementById('status').innerHTML = '<span class="text-success">✓ Connected</span>';
+                console.log('Wallet connected! Contract ready.');
+                console.log('Available test functions: testGetRegisteredUsers(), testGetUserDetails(address), testContractInfo()');
+                
+            } catch (error) {
+                console.error('Connection failed:', error);
+                document.getElementById('status').innerHTML = '<span class="text-danger">✗ Failed</span>';
+            }
+        });
+
+        // Test function 1: Get all registered users
+        window.testGetRegisteredUsers = async function() {
+            try {
+                console.log('=== Testing getRegisteredUsers() ===');
+                
+                if (!contract) {
+                    throw new Error('Contract not available. Please connect wallet first.');
+                }
+
+                const startTime = Date.now();
+                const userAddresses = await contract.methods.getRegisteredUsers().call();
+                const endTime = Date.now();
+                
+                console.log(`✅ Retrieved ${userAddresses.length} registered users in ${endTime - startTime}ms`);
+                console.log('User addresses:', userAddresses);
+                
+                // Get details for each user
+                for (let i = 0; i < userAddresses.length; i++) {
+                    const address = userAddresses[i];
+                    try {
+                        const userInfo = await contract.methods.getUser(address).call();
+                        const roleNames = ['FARMER', 'PROCESSOR', 'TRANSPORTER', 'WAREHOUSE', 'RETAILER', 'CONSUMER', 'ADMIN'];
+                        const roleName = roleNames[userInfo.role] || 'UNKNOWN';
+                        
+                        console.log(`User ${i + 1}:`, {
+                            address,
+                            role: roleName,
+                            companyName: userInfo.companyName,
+                            isVerified: userInfo.isVerified,
+                            isActive: userInfo.isActive,
+                            registrationDate: new Date(userInfo.registrationDate * 1000)
+                        });
+                    } catch (userError) {
+                        console.warn(`❌ Error getting details for ${address}:`, userError);
+                    }
+                }
+                
+                return userAddresses;
+                
+            } catch (error) {
+                console.error('❌ Error testing getRegisteredUsers():', error);
+                throw error;
+            }
+        };
+
+        // Test function 2: Get specific user details
+        window.testGetUserDetails = async function(address) {
+            try {
+                console.log(`=== Testing getUser() for ${address} ===`);
+                
+                if (!contract) {
+                    throw new Error('Contract not available. Please connect wallet first.');
+                }
+
+                if (!address) {
+                    throw new Error('Please provide a user address');
+                }
+
+                const userInfo = await contract.methods.getUser(address).call();
+                const roleNames = ['FARMER', 'PROCESSOR', 'TRANSPORTER', 'WAREHOUSE', 'RETAILER', 'CONSUMER', 'ADMIN'];
+                const roleName = roleNames[userInfo.role] || 'UNKNOWN';
+                
+                console.log('✅ User details retrieved:', {
+                    address,
+                    role: roleName,
+                    companyName: userInfo.companyName,
+                    isVerified: userInfo.isVerified,
+                    isActive: userInfo.isActive,
+                    registrationDate: new Date(userInfo.registrationDate * 1000)
+                });
+                
+                return userInfo;
+                
+            } catch (error) {
+                console.error('❌ Error testing getUser():', error);
+                throw error;
+            }
+        };
+
+        // Test function 3: Get contract information
+        window.testContractInfo = async function() {
+            try {
+                console.log('=== Testing Contract Information ===');
+                
+                if (!contract) {
+                    throw new Error('Contract not available. Please connect wallet first.');
+                }
+
+                const contractAddress = contract.options.address;
+                const admin = await contract.methods.admin().call();
+                const productCount = await contract.methods.getProductCount().call();
+                const userCount = await contract.methods.getRegisteredUsers().call();
+                
+                console.log('✅ Contract information:', {
+                    contractAddress,
+                    admin,
+                    productCount: parseInt(productCount),
+                    userCount: userCount.length
+                });
+                
+                return {
+                    contractAddress,
+                    admin,
+                    productCount: parseInt(productCount),
+                    userCount: userCount.length
+                };
+                
+            } catch (error) {
+                console.error('❌ Error testing contract info:', error);
+                throw error;
+            }
+        };
+
+        // Test function 4: Performance test
+        window.testPerformance = async function() {
+            try {
+                console.log('=== Performance Test ===');
+                
+                if (!contract) {
+                    throw new Error('Contract not available. Please connect wallet first.');
+                }
+
+                const iterations = 5;
+                const times = [];
+                
+                for (let i = 0; i < iterations; i++) {
+                    const startTime = Date.now();
+                    await contract.methods.getRegisteredUsers().call();
+                    const endTime = Date.now();
+                    times.push(endTime - startTime);
+                    console.log(`Iteration ${i + 1}: ${endTime - startTime}ms`);
+                }
+                
+                const avgTime = times.reduce((a, b) => a + b, 0) / times.length;
+                const minTime = Math.min(...times);
+                const maxTime = Math.max(...times);
+                
+                console.log('✅ Performance results:', {
+                    iterations,
+                    averageTime: `${avgTime.toFixed(2)}ms`,
+                    minTime: `${minTime}ms`,
+                    maxTime: `${maxTime}ms`
+                });
+                
+                return { avgTime, minTime, maxTime, times };
+                
+            } catch (error) {
+                console.error('❌ Error in performance test:', error);
+                throw error;
+            }
+        };
+
+        console.log('🚀 Simple getRegisteredUsers() Test loaded!');
+        console.log('📋 Available functions:');
+        console.log('  - testGetRegisteredUsers()');
+        console.log('  - testGetUserDetails(address)');
+        console.log('  - testContractInfo()');
+        console.log('  - testPerformance()');
+        console.log('💡 Click "Connect Wallet" to start testing!');
+    </script>
+</body>
+</html>

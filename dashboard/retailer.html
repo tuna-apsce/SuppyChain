@@ -1,0 +1,2749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retailer Dashboard - AgriTrace</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../assets/css/main.css" rel="stylesheet">
+    <link href="../assets/css/components.css" rel="stylesheet">
+    <link href="../assets/css/dashboard.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <div class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-store me-2"></i>AgriTrace</h3>
+                <p>Retailer Dashboard</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#overview">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Overview
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#received-goods">
+                            <i class="fas fa-box-open"></i>
+                            Received Goods
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#sales">
+                            <i class="fas fa-shopping-cart"></i>
+                            Sales
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#qr-generator">
+                            <i class="fas fa-qrcode"></i>
+                            QR Code Generator
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#profile">
+                            <i class="fas fa-user"></i>
+                            Profile
+                        </a>
+                    </li>
+                    <li class="nav-item mt-3">
+                        <a class="nav-link" href="../index.html">
+                            <i class="fas fa-home"></i>
+                            Back to Home
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="dashboard-main">
+            <!-- Header -->
+            <div class="dashboard-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-1">Retailer Dashboard</h4>
+                        <p class="text-muted mb-0">Manage retail operations and sales tracking</p>
+                    </div>
+                    <div class="header-user-info">
+                        <div class="user-details">
+                            <p class="user-name mb-0" id="userName">Loading...</p>
+                            <p class="user-role" id="userRole">RETAILER</p>
+                        </div>
+                        <div class="user-avatar" id="userAvatar">R</div>
+                        <button class="btn btn-outline-primary btn-sm" id="connectWalletBtn">
+                            <i class="fas fa-wallet me-1"></i>Connect Wallet
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="dashboard-content">
+                <!-- Overview Section -->
+                <div id="overview-section" class="content-section">
+                    <!-- Stats Grid -->
+                    <div class="stats-grid mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-box-open"></i>
+                            </div>
+                            <div class="stat-number" id="totalReceived">0</div>
+                            <div class="stat-label">Goods Received</div>
+                            <div class="stat-change positive" id="receivedChange">+0 this week</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="stat-number" id="totalSales">0</div>
+                            <div class="stat-label">Total Sales</div>
+                            <div class="stat-change positive" id="salesChange">+0 this month</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-qrcode"></i>
+                            </div>
+                            <div class="stat-number" id="totalQRCodes">0</div>
+                            <div class="stat-label">QR Codes Generated</div>
+                            <div class="stat-change positive" id="qrCodesChange">+0 this week</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-number" id="avgSaleValue">$0</div>
+                            <div class="stat-label">Avg Sale Value</div>
+                            <div class="stat-change positive" id="avgSaleChange">+0% increase</div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions mb-4">
+                        <button class="quick-action-btn" id="quickReceiveGoods">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-box-open"></i>
+                            </div>
+                            <div class="quick-action-text">Receive Goods</div>
+                        </button>
+                        <button class="quick-action-btn" id="quickRecordSale">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="quick-action-text">Record Sale</div>
+                        </button>
+                        <button class="quick-action-btn" id="quickScanBatch">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-qrcode"></i>
+                            </div>
+                            <div class="quick-action-text">Scan Batch ID</div>
+                        </button>
+                        <button class="quick-action-btn" id="quickQRGenerator">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-qrcode"></i>
+                            </div>
+                            <div class="quick-action-text">QR Generator</div>
+                        </button>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="content-grid">
+                        <div class="content-card">
+                            <div class="content-card-header">
+                                <div class="content-card-icon primary">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <h5 class="content-card-title">Recent Retail Events</h5>
+                            </div>
+                            <div class="activity-feed" id="recentActivity">
+                                <div class="text-center py-3">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Loading recent activity...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div class="content-card-header">
+                                <div class="content-card-icon info">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <h5 class="content-card-title">Sales Summary</h5>
+                            </div>
+                            <div class="sales-summary" id="salesSummary">
+                                <div class="text-center py-3">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Loading sales summary...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Received Goods Section -->
+                <div id="received-goods-section" class="content-section d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4>Received Goods</h4>
+                        <button class="btn btn-dashboard btn-dashboard-primary" id="receiveGoodsBtn">
+                            <i class="fas fa-box-open me-2"></i>Receive Goods
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dashboard">
+                            <thead>
+                                <tr>
+                                    <th>Batch ID</th>
+                                    <th>Product Name</th>
+                                    <th>Category</th>
+                                    <th>Quantity</th>
+                                    <th>Received Date</th>
+                                    <th>Supplier</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="receivedGoodsTableBody">
+                                <tr>
+                                    <td colspan="8" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Loading received goods...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sales Section -->
+                <div id="sales-section" class="content-section d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4>Sales Records</h4>
+                        <button class="btn btn-dashboard btn-dashboard-primary" id="recordSaleBtn">
+                            <i class="fas fa-shopping-cart me-2"></i>Record Sale
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dashboard">
+                            <thead>
+                                <tr>
+                                    <th>Sale ID</th>
+                                    <th>Batch ID</th>
+                                    <th>Product Name</th>
+                                    <th>Quantity</th>
+                                    <th>Sale Price</th>
+                                    <th>Customer</th>
+                                    <th>Sale Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesTableBody">
+                                <tr>
+                                    <td colspan="8" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Loading sales records...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- QR Code Generator Section -->
+                <div id="qr-generator-section" class="content-section d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4><i class="fas fa-qrcode me-2"></i>QR Code Generator</h4>
+                        <button class="btn btn-dashboard btn-dashboard-primary" onclick="loadQRGenerator()">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dashboard">
+                            <thead>
+                                <tr>
+                                    <th>Batch ID</th>
+                                    <th>Product Name</th>
+                                    <th>Received Date</th>
+                                    <th>QR Code</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="qrGeneratorTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Loading received goods...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Profile Section -->
+                <div id="profile-section" class="content-section d-none">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <div class="content-card-icon primary">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <h5 class="content-card-title">Profile Information</h5>
+                                </div>
+                                <form id="profileForm">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="profileCompanyName" class="form-label">Store/Retail Company Name *</label>
+                                                <input type="text" class="form-control" id="profileCompanyName" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="profileRole" class="form-label">Role</label>
+                                                <input type="text" class="form-control" id="profileRole" value="Retailer" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="profileAddress" class="form-label">Wallet Address</label>
+                                                <input type="text" class="form-control" id="profileAddress" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="profileStatus" class="form-label">Verification Status</label>
+                                                <input type="text" class="form-control" id="profileStatus" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="profileDescription" class="form-label">Store Description</label>
+                                        <textarea class="form-control" id="profileDescription" rows="4" placeholder="Describe your store, location, specialties, etc."></textarea>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-dashboard btn-dashboard-primary">
+                                            <i class="fas fa-save me-2"></i>Update Profile
+                                        </button>
+                                        <button type="button" class="btn btn-dashboard btn-dashboard-outline" id="refreshProfileBtn">
+                                            <i class="fas fa-refresh me-2"></i>Refresh
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <div class="content-card-icon info">
+                                        <i class="fas fa-chart-pie"></i>
+                                    </div>
+                                    <h5 class="content-card-title">Account Statistics</h5>
+                                </div>
+                                <div class="account-stats" id="accountStats">
+                                    <div class="text-center py-3">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Loading account stats...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notificationToast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="fas fa-info-circle text-primary me-2"></i>
+                <strong class="me-auto">AgriTrace</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                <!-- Toast message will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- Receive Goods Modal -->
+    <div class="modal fade" id="receiveGoodsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Receive Goods</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="receiveGoodsForm">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="batchId" class="form-label">Batch ID *</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="batchId" required>
+                                        <button type="button" class="btn btn-outline-primary" id="scanBatchBtn">
+                                            <i class="fas fa-qrcode"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="quantity" class="form-label">Quantity *</label>
+                                    <input type="number" class="form-control" id="quantity" min="1" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="supplier" class="form-label">Supplier *</label>
+                                    <input type="text" class="form-control" id="supplier" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="receivedDate" class="form-label">Received Date *</label>
+                                    <input type="date" class="form-control" id="receivedDate" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="storageLocation" class="form-label">Storage Location</label>
+                            <input type="text" class="form-control" id="storageLocation" placeholder="e.g., Shelf A1, Cold Storage Room 2">
+                        </div>
+                        <div class="mb-3">
+                            <label for="qualityNotes" class="form-label">Quality Notes</label>
+                            <textarea class="form-control" id="qualityNotes" rows="3" placeholder="Quality inspection notes, condition upon arrival, etc."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="documents" class="form-label">Documents</label>
+                            <input type="file" class="form-control" id="documents" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                            <div class="form-text">Upload certificates, invoices, quality reports, etc.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-box-open me-2"></i>Receive Goods
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Record Sale Modal -->
+    <div class="modal fade" id="recordSaleModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Record Sale</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="recordSaleForm">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="saleBatchId" class="form-label">Batch ID *</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="saleBatchId" required placeholder="Enter batch ID or scan QR code">
+                                        <button type="button" class="btn btn-outline-primary" id="scanSaleBatchBtn">
+                                            <i class="fas fa-qrcode"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="saleQuantity" class="form-label">Quantity *</label>
+                                    <input type="number" class="form-control" id="saleQuantity" min="1" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="salePrice" class="form-label">Sale Price *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="salePrice" step="0.01" min="0" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="saleDate" class="form-label">Sale Date *</label>
+                                    <input type="date" class="form-control" id="saleDate" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="customerName" class="form-label">Customer Name *</label>
+                                    <input type="text" class="form-control" id="customerName" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="customerEmail" class="form-label">Customer Email</label>
+                                    <input type="email" class="form-control" id="customerEmail">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="saleNotes" class="form-label">Sale Notes</label>
+                            <textarea class="form-control" id="saleNotes" rows="3" placeholder="Additional notes about the sale, customer preferences, etc."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="saleDocuments" class="form-label">Sale Documents</label>
+                            <input type="file" class="form-control" id="saleDocuments" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                            <div class="form-text">Upload receipts, invoices, customer feedback, etc.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-shopping-cart me-2"></i>Record Sale
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Scanner Modal -->
+    <div class="modal fade" id="qrScannerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Scan QR Code</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <video id="scannerVideo" autoplay playsinline class="w-100"></video>
+                    <div id="scannerResult" class="d-none mt-3">
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            QR Code detected: <span id="scannedBatchId"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="openQRFileUpload()">
+                        <i class="fas fa-upload me-1"></i>Upload Image
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Details Modal -->
+    <div class="modal fade" id="eventDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Event Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="eventDetailsContent">
+                    <!-- Event details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Batch Details Modal -->
+    <div class="modal fade" id="batchDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Batch Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="batchDetailsContent">
+                    <!-- Batch details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sale Details Modal -->
+    <div class="modal fade" id="saleDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Sale Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="saleDetailsContent">
+                    <!-- Sale details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/web3.min.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/blockchain.js"></script>
+    <script src="../assets/js/ipfs.js"></script>
+    <script src="../assets/js/qrcode.min.js"></script>
+    <script src="../assets/js/qr-scanner.min.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/dashboard.js"></script>
+
+    <script>
+        // Global variables
+        let retailerBlockchainService;
+        let retailerIPFSService;
+        let qrScanner;
+        let currentUser = null;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeRetailerDashboard();
+        });
+
+        async function initializeRetailerDashboard() {
+            try {
+                // Initialize services
+                retailerBlockchainService = new BlockchainService();
+                retailerIPFSService = new IPFSService();
+                qrScanner = new QRScanner();
+
+                // Set up event listeners
+                setupEventListeners();
+                
+                // Load initial data
+                await loadUserInfo();
+                await loadOverviewData();
+                
+            } catch (error) {
+                console.error('Error initializing retailer dashboard:', error);
+                AgriTraceUtils.showToast('Error initializing dashboard: ' + error.message, 'error');
+            }
+        }
+
+        function setupEventListeners() {
+            // Connect Wallet button
+            const connectWalletBtn = document.getElementById('connectWalletBtn');
+            if (connectWalletBtn) {
+                connectWalletBtn.addEventListener('click', connectWallet);
+            }
+
+            // Quick action buttons
+            const quickReceiveGoods = document.getElementById('quickReceiveGoods');
+            if (quickReceiveGoods) {
+                quickReceiveGoods.addEventListener('click', function() {
+                    showSection('received-goods-section');
+                    openReceiveGoodsModal();
+                });
+            }
+
+            const quickRecordSale = document.getElementById('quickRecordSale');
+            if (quickRecordSale) {
+                quickRecordSale.addEventListener('click', function() {
+                    showSection('sales-section');
+                    openRecordSaleModal();
+                });
+            }
+
+            const quickScanBatch = document.getElementById('quickScanBatch');
+            if (quickScanBatch) {
+                quickScanBatch.addEventListener('click', openQRScanner);
+            }
+
+            const quickQRGenerator = document.getElementById('quickQRGenerator');
+            if (quickQRGenerator) {
+                quickQRGenerator.addEventListener('click', function() {
+                    showSection('qr-generator-section');
+                });
+            }
+
+            // Section buttons
+            const receiveGoodsBtn = document.getElementById('receiveGoodsBtn');
+            if (receiveGoodsBtn) {
+                receiveGoodsBtn.addEventListener('click', openReceiveGoodsModal);
+            }
+
+            const recordSaleBtn = document.getElementById('recordSaleBtn');
+            if (recordSaleBtn) {
+                recordSaleBtn.addEventListener('click', openRecordSaleModal);
+            }
+
+            const addCustomerBtn = document.getElementById('addCustomerBtn');
+            if (addCustomerBtn) {
+                addCustomerBtn.addEventListener('click', function() {
+                    // For now, just show a message
+                    AgriTraceUtils.showToast('Customer management feature coming soon!', 'info');
+                });
+            }
+
+            // Form submissions
+            const receiveGoodsForm = document.getElementById('receiveGoodsForm');
+            if (receiveGoodsForm) {
+                receiveGoodsForm.addEventListener('submit', handleReceiveGoods);
+            }
+
+            const recordSaleForm = document.getElementById('recordSaleForm');
+            if (recordSaleForm) {
+                recordSaleForm.addEventListener('submit', handleRecordSale);
+            }
+
+            const profileForm = document.getElementById('profileForm');
+            if (profileForm) {
+                profileForm.addEventListener('submit', handleProfileUpdate);
+            }
+
+            // QR scan buttons
+            const scanBatchBtn = document.getElementById('scanBatchBtn');
+            if (scanBatchBtn) {
+                scanBatchBtn.addEventListener('click', function() {
+                    openQRScanner('batchId');
+                });
+            }
+
+            const scanSaleBatchBtn = document.getElementById('scanSaleBatchBtn');
+            if (scanSaleBatchBtn) {
+                scanSaleBatchBtn.addEventListener('click', function() {
+                    openQRScanner('saleBatchId');
+                });
+            }
+
+            // Refresh buttons
+            const refreshProfileBtn = document.getElementById('refreshProfileBtn');
+            if (refreshProfileBtn) {
+                refreshProfileBtn.addEventListener('click', loadUserInfo);
+            }
+
+            // Navigation event listeners
+            const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    
+                    // Allow external links (like Back to Home) to work normally
+                    if (href && (href.startsWith('../') || href.startsWith('http') || href.startsWith('/'))) {
+                        return;
+                    }
+                    
+                    // Prevent default only for internal navigation
+                    e.preventDefault();
+                    
+                    if (href === '#overview') {
+                        showSection('overview-section');
+                        loadOverviewData();
+                    } else if (href === '#received-goods') {
+                        showSection('received-goods-section');
+                        loadReceivedGoods();
+                    } else if (href === '#sales') {
+                        showSection('sales-section');
+                        loadSalesRecords();
+                    } else if (href === '#qr-generator') {
+                        showSection('qr-generator-section');
+                        loadQRGenerator();
+                    } else if (href === '#profile') {
+                        showSection('profile-section');
+                        loadUserInfo();
+                    }
+                });
+            });
+
+            // Set default dates
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('receivedDate').value = today;
+            document.getElementById('saleDate').value = today;
+        }
+
+        async function connectWallet() {
+            try {
+                if (!retailerBlockchainService) {
+                    retailerBlockchainService = new BlockchainService();
+                }
+
+                await retailerBlockchainService.connectWallet();
+                await loadUserInfo();
+                AgriTraceUtils.showToast('Wallet connected successfully!', 'success');
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
+                AgriTraceUtils.showToast('Error connecting wallet: ' + error.message, 'error');
+            }
+        }
+
+        async function loadUserInfo() {
+            try {
+                // Ensure blockchain service is initialized
+                if (!retailerBlockchainService) {
+                    retailerBlockchainService = new BlockchainService();
+                }
+                
+                if (!retailerBlockchainService.isConnected()) {
+                    console.log('Blockchain service not connected in loadUserInfo');
+                    updateUserDisplay(null);
+                    return;
+                }
+
+                console.log('Loading user info...');
+                currentUser = await retailerBlockchainService.getCurrentUser();
+                console.log('getCurrentUser result:', currentUser);
+                
+                // If getCurrentUser returns null, try to get user by address
+                if (!currentUser) {
+                    console.log('getCurrentUser returned null, trying getUser by address...');
+                    const userAddress = await retailerBlockchainService.getCurrentAccount();
+                    console.log('Current account address:', userAddress);
+                    
+                    if (userAddress) {
+                        currentUser = await retailerBlockchainService.getUser(userAddress);
+                        console.log('getUser result:', currentUser);
+                    }
+                }
+                
+                updateUserDisplay(currentUser);
+                
+                // Load profile form data
+                if (currentUser) {
+                    document.getElementById('profileCompanyName').value = currentUser.companyName || '';
+                    document.getElementById('profileRole').value = currentUser.role || 'RETAILER';
+                    document.getElementById('profileAddress').value = currentUser.userAddress || '';
+                    document.getElementById('profileStatus').value = currentUser.isVerified ? 'Verified' : 'Pending Verification';
+                    console.log('User info loaded successfully:', currentUser);
+                } else {
+                    console.log('No user data found - user may not be registered');
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                updateUserDisplay(null);
+            }
+        }
+
+        function updateUserDisplay(user) {
+            const userNameEl = document.getElementById('userName');
+            const userRoleEl = document.getElementById('userRole');
+            const userAvatarEl = document.getElementById('userAvatar');
+            const connectBtn = document.getElementById('connectWalletBtn');
+
+            if (user) {
+                userNameEl.textContent = user.companyName || 'Unknown User';
+                userRoleEl.textContent = user.role || 'RETAILER';
+                userAvatarEl.textContent = (user.companyName || 'R').charAt(0).toUpperCase();
+                connectBtn.textContent = 'Connected';
+                connectBtn.classList.remove('btn-outline-primary');
+                connectBtn.classList.add('btn-success');
+            } else {
+                userNameEl.textContent = 'Not Connected';
+                userRoleEl.textContent = 'RETAILER';
+                userAvatarEl.textContent = 'R';
+                connectBtn.innerHTML = '<i class="fas fa-wallet me-1"></i>Connect Wallet';
+                connectBtn.classList.remove('btn-success');
+                connectBtn.classList.add('btn-outline-primary');
+            }
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.add('d-none');
+            });
+
+            // Show target section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.remove('d-none');
+            }
+
+            // Update navigation
+            const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                const href = link.getAttribute('href');
+                if (href === `#${sectionId}` || (sectionId === 'overview-section' && href === '#overview')) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        async function loadOverviewData() {
+            try {
+                await loadRetailStats();
+                await loadRecentActivity();
+                await loadSalesSummary();
+            } catch (error) {
+                console.error('Error loading overview data:', error);
+            }
+        }
+
+        async function loadRetailStats() {
+            try {
+                // Mock data for now - in real implementation, get from blockchain
+                document.getElementById('totalReceived').textContent = '24';
+                document.getElementById('totalSales').textContent = '156';
+                document.getElementById('totalQRCodes').textContent = '15';
+                document.getElementById('avgSaleValue').textContent = '$12.50';
+                
+                document.getElementById('receivedChange').textContent = '+5 this week';
+                document.getElementById('salesChange').textContent = '+23 this month';
+                document.getElementById('qrCodesChange').textContent = '+8 this week';
+                document.getElementById('avgSaleChange').textContent = '+8% increase';
+            } catch (error) {
+                console.error('Error loading retail stats:', error);
+            }
+        }
+
+        async function loadRecentActivity() {
+            try {
+                const recentActivityEl = document.getElementById('recentActivity');
+                
+                // Mock data for now
+                recentActivityEl.innerHTML = `
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-box-open text-success"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Goods Received</div>
+                            <div class="activity-desc">Batch RICE-2025-002 from Farm A (25 units)</div>
+                            <div class="activity-time">2 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-shopping-cart text-primary"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Sale Recorded</div>
+                            <div class="activity-desc">Sold 5 units of RICE-2025-001 to John Doe</div>
+                            <div class="activity-time">4 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-user-plus text-info"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">New Customer</div>
+                            <div class="activity-desc">Jane Smith registered as new customer</div>
+                            <div class="activity-time">1 day ago</div>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading recent activity:', error);
+            }
+        }
+
+        async function loadSalesSummary() {
+            try {
+                const salesSummaryEl = document.getElementById('salesSummary');
+                
+                // Mock data for now
+                salesSummaryEl.innerHTML = `
+                    <div class="summary-item">
+                        <div class="summary-label">Today's Sales</div>
+                        <div class="summary-value">$245.50</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">This Week</div>
+                        <div class="summary-value">$1,890.25</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">This Month</div>
+                        <div class="summary-value">$7,650.00</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Top Product</div>
+                        <div class="summary-value">RICE-2025-001</div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading sales summary:', error);
+            }
+        }
+
+        async function loadReceivedGoods() {
+            try {
+                const tbody = document.getElementById('receivedGoodsTableBody');
+                
+                // Ensure blockchain service is initialized
+                if (!retailerBlockchainService) {
+                    retailerBlockchainService = new BlockchainService();
+                }
+                
+                if (!retailerBlockchainService.isConnected()) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">
+                                <i class="fas fa-wallet me-2"></i>Please connect your wallet first
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                // Load current user info if not already loaded
+                if (!currentUser || !currentUser.userAddress) {
+                    try {
+                        await loadUserInfo();
+                        if (!currentUser || !currentUser.userAddress) {
+                            console.log('currentUser still null after loadUserInfo()');
+                            
+                            // Try to get current account address directly
+                            const userAddress = await retailerBlockchainService.getCurrentAccount();
+                            console.log('Trying with direct account address:', userAddress);
+                            
+                            if (!userAddress) {
+                                tbody.innerHTML = `
+                                    <tr>
+                                        <td colspan="8" class="text-center py-4 text-warning">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>User information not loaded. Please refresh the page.
+                                        </td>
+                                    </tr>
+                                `;
+                                return;
+                            }
+                            
+                            // Use direct address for filtering
+                            currentUser = { userAddress: userAddress };
+                            console.log('Using direct address for currentUser:', currentUser);
+                        } else {
+                            console.log('currentUser loaded successfully:', currentUser);
+                        }
+                    } catch (userError) {
+                        console.error('Error loading user info:', userError);
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-danger">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>Error loading user information
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                } else {
+                    console.log('currentUser already loaded:', currentUser);
+                }
+
+                // Get all batch IDs and load products received by this retailer
+                let batchIds = [];
+                try {
+                    batchIds = await retailerBlockchainService.getAllBatchIds();
+                    console.log('Found batch IDs:', batchIds);
+                } catch (error) {
+                    console.warn('Could not get batch IDs:', error);
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Unable to load products. Please try refreshing the page.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                if (batchIds.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                <i class="fas fa-inbox me-2"></i>No products found in the system
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                const receivedGoods = [];
+
+                for (const batchId of batchIds) {
+                    try {
+                        const product = await retailerBlockchainService.getProduct(batchId);
+                        
+                        // Check if product is currently owned by this retailer
+                        if (product.currentOwner.toLowerCase() === currentUser.userAddress.toLowerCase()) {
+                            console.log(`Product ${batchId} belongs to current retailer, loading events...`);
+                            
+                            try {
+                                // Get retail receive events to determine received goods details
+                                const events = await retailerBlockchainService.getEvents(batchId);
+                                console.log(`Events for ${batchId}:`, events);
+                                
+                                const retailReceiveEvents = events.filter(event => 
+                                    event.eventType === 'RETAIL_RECEIVE' || event.eventTypeValue === 6
+                                );
+                                
+                                if (retailReceiveEvents.length > 0) {
+                                    const latestEvent = retailReceiveEvents[retailReceiveEvents.length - 1];
+                                    
+                                    // Extract quantity from retail receive event notes if available
+                                    let receivedQuantity = product.quantity; // Default to product quantity
+                                    if (latestEvent.notes) {
+                                        const quantityMatch = latestEvent.notes.match(/Received (\d+) units/i);
+                                        if (quantityMatch) {
+                                            receivedQuantity = quantityMatch[1];
+                                        }
+                                    }
+                                    
+                                    // Extract supplier from notes
+                                    let supplier = 'Unknown Supplier';
+                                    if (latestEvent.notes) {
+                                        const supplierMatch = latestEvent.notes.match(/from ([^,]+)/i);
+                                        if (supplierMatch) {
+                                            supplier = supplierMatch[1].trim();
+                                        }
+                                    }
+                                    
+                                    receivedGoods.push({
+                                        batchId: product.batchId,
+                                        productName: product.productName,
+                                        category: product.category,
+                                        quantity: receivedQuantity,
+                                        receivedDate: new Date(latestEvent.timestamp * 1000).toISOString().split('T')[0],
+                                        supplier: supplier,
+                                        status: 'Received'
+                                    });
+                                    console.log(`Added ${batchId} to received goods with quantity: ${receivedQuantity}`);
+                                }
+                            } catch (eventError) {
+                                console.warn(`Error loading events for ${batchId}:`, eventError);
+                            }
+                        }
+                    } catch (productError) {
+                        console.warn(`Error loading product ${batchId}:`, productError);
+                    }
+                }
+
+                // Display received goods
+                if (receivedGoods.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                <i class="fas fa-inbox me-2"></i>No received goods found
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                // Sort by received date (newest first)
+                receivedGoods.sort((a, b) => new Date(b.receivedDate) - new Date(a.receivedDate));
+
+                // Generate table rows
+                const rowsHtml = receivedGoods.map(item => `
+                    <tr>
+                        <td><code>${AgriTraceUtils.sanitizeHtml(item.batchId)}</code></td>
+                        <td>${AgriTraceUtils.sanitizeHtml(item.productName)}</td>
+                        <td>${AgriTraceUtils.sanitizeHtml(item.category)}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.receivedDate}</td>
+                        <td>${AgriTraceUtils.sanitizeHtml(item.supplier)}</td>
+                        <td><span class="badge bg-success">${item.status}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewBatchDetails('${item.batchId}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                tbody.innerHTML = rowsHtml;
+            } catch (error) {
+                console.error('Error loading received goods:', error);
+                const tbody = document.getElementById('receivedGoodsTableBody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center text-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Error loading received goods
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        async function loadSalesRecords() {
+            try {
+                const tbody = document.getElementById('salesTableBody');
+                
+                // Ensure blockchain service is initialized
+                if (!retailerBlockchainService) {
+                    retailerBlockchainService = new BlockchainService();
+                }
+                
+                if (!retailerBlockchainService.isConnected()) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">
+                                <i class="fas fa-wallet me-2"></i>Please connect your wallet first
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                // Load current user info if not already loaded
+                if (!currentUser || !currentUser.userAddress) {
+                    try {
+                        await loadUserInfo();
+                        if (!currentUser || !currentUser.userAddress) {
+                            console.log('currentUser still null after loadUserInfo()');
+                            
+                            // Try to get current account address directly
+                            const userAddress = await retailerBlockchainService.getCurrentAccount();
+                            console.log('Trying with direct account address:', userAddress);
+                            
+                            if (!userAddress) {
+                                tbody.innerHTML = `
+                                    <tr>
+                                        <td colspan="8" class="text-center py-4 text-warning">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>User information not loaded. Please refresh the page.
+                                        </td>
+                                    </tr>
+                                `;
+                                return;
+                            }
+                            
+                            // Use direct address for filtering
+                            currentUser = { userAddress: userAddress };
+                            console.log('Using direct address for currentUser:', currentUser);
+                        } else {
+                            console.log('currentUser loaded successfully:', currentUser);
+                        }
+                    } catch (userError) {
+                        console.error('Error loading user info:', userError);
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-danger">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>Error loading user information
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                } else {
+                    console.log('currentUser already loaded:', currentUser);
+                }
+
+                // Get all batch IDs and load sales made by this retailer
+                let batchIds = [];
+                try {
+                    batchIds = await retailerBlockchainService.getAllBatchIds();
+                    console.log('Found batch IDs:', batchIds);
+                } catch (error) {
+                    console.warn('Could not get batch IDs:', error);
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Unable to load products. Please try refreshing the page.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                if (batchIds.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                <i class="fas fa-shopping-cart me-2"></i>No products found in the system
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                const salesRecords = [];
+
+                for (const batchId of batchIds) {
+                    try {
+                        const product = await retailerBlockchainService.getProduct(batchId);
+                        
+                        try {
+                            // Get sale events made by this retailer
+                            const events = await retailerBlockchainService.getEvents(batchId);
+                            console.log(`Events for ${batchId}:`, events);
+                            
+                            const saleEvents = events.filter(event => 
+                                event.eventType === 'SALE' || event.eventTypeValue === 7
+                            );
+                            
+                            // Filter sales made by this retailer
+                            const retailerSales = saleEvents.filter(event => 
+                                event.actor.toLowerCase() === currentUser.userAddress.toLowerCase()
+                            );
+                            
+                            for (const saleEvent of retailerSales) {
+                                // Extract sale details from notes
+                                let saleQuantity = 'Unknown';
+                                let salePrice = 'Unknown';
+                                let customerName = 'Unknown Customer';
+                                let saleDate = new Date(saleEvent.timestamp * 1000).toISOString().split('T')[0];
+                                
+                                if (saleEvent.notes) {
+                                    const quantityMatch = saleEvent.notes.match(/Sold (\d+) units/i);
+                                    if (quantityMatch) {
+                                        saleQuantity = quantityMatch[1];
+                                    }
+                                    
+                                    const priceMatch = saleEvent.notes.match(/\$([\d.]+)/i);
+                                    if (priceMatch) {
+                                        salePrice = '$' + priceMatch[1];
+                                    }
+                                    
+                                    const customerMatch = saleEvent.notes.match(/to ([^,]+)/i);
+                                    if (customerMatch) {
+                                        customerName = customerMatch[1].trim();
+                                    }
+                                }
+                                
+                                // Generate sale ID
+                                const saleId = `SALE-${saleEvent.eventId}`;
+                                
+                                salesRecords.push({
+                                    saleId: saleId,
+                                    batchId: product.batchId,
+                                    productName: product.productName,
+                                    quantity: saleQuantity,
+                                    salePrice: salePrice,
+                                    customer: customerName,
+                                    saleDate: saleDate
+                                });
+                                console.log(`Added sale ${saleId} for ${batchId}`);
+                            }
+                        } catch (eventError) {
+                            console.warn(`Error loading events for ${batchId}:`, eventError);
+                        }
+                    } catch (productError) {
+                        console.warn(`Error loading product ${batchId}:`, productError);
+                    }
+                }
+
+                // Display sales records
+                if (salesRecords.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                <i class="fas fa-shopping-cart me-2"></i>No sales records found
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                // Sort by sale date (newest first)
+                salesRecords.sort((a, b) => new Date(b.saleDate) - new Date(a.saleDate));
+
+                // Generate table rows
+                const rowsHtml = salesRecords.map(item => `
+                    <tr>
+                        <td><code>${AgriTraceUtils.sanitizeHtml(item.saleId)}</code></td>
+                        <td><code>${AgriTraceUtils.sanitizeHtml(item.batchId)}</code></td>
+                        <td>${AgriTraceUtils.sanitizeHtml(item.productName)}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.salePrice}</td>
+                        <td>${AgriTraceUtils.sanitizeHtml(item.customer)}</td>
+                        <td>${item.saleDate}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewSaleDetails('${item.saleId}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                tbody.innerHTML = rowsHtml;
+            } catch (error) {
+                console.error('Error loading sales records:', error);
+                const tbody = document.getElementById('salesTableBody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center text-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Error loading sales records
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        async function loadQRGenerator() {
+            try {
+                const tbody = document.getElementById('qrGeneratorTableBody');
+                
+                // Ensure blockchain service is initialized
+                if (!retailerBlockchainService) {
+                    retailerBlockchainService = new BlockchainService();
+                }
+
+                if (!retailerBlockchainService.isConnected()) {
+                    await retailerBlockchainService.connectWallet();
+                    await loadUserInfo();
+                }
+
+                if (!currentUser || !currentUser.userAddress) {
+                    // Try to get current account address directly
+                    const userAddress = await retailerBlockchainService.getCurrentAccount();
+                    console.log('Trying with direct account address:', userAddress);
+                    
+                    if (!userAddress) {
+                        console.log('No user address available');
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Please refresh the page and try again
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                    
+                    // Use direct address for currentUser
+                    currentUser = { userAddress: userAddress };
+                    console.log('Using direct address for currentUser:', currentUser);
+                }
+
+                // Get all batch IDs first
+                const batchIds = await retailerBlockchainService.getAllBatchIds();
+                console.log('All batch IDs for QR generation:', batchIds);
+
+                if (!batchIds || batchIds.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">
+                                <i class="fas fa-qrcode fa-2x mb-2"></i>
+                                <br>No products found in the system
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                // Get received goods events for this retailer
+                const receivedGoodsMap = new Map(); // Use Map to group by batchId
+                
+                console.log('Current user address for filtering:', currentUser.userAddress);
+                
+                for (const batchId of batchIds) {
+                    try {
+                        console.log(`Checking events for batch: ${batchId}`);
+                        const events = await retailerBlockchainService.getEvents(batchId);
+                        console.log(`Events for ${batchId}:`, events);
+                        
+                        const retailReceiveEvents = events.filter(event => 
+                            event.eventType === 'RETAIL_RECEIVE' && 
+                            event.actor.toLowerCase() === currentUser.userAddress.toLowerCase()
+                        );
+                        console.log(`Filtered events for current user (${currentUser.userAddress}):`, retailReceiveEvents);
+                        
+                        if (retailReceiveEvents.length > 0) {
+                            // Get product info
+                            const product = await retailerBlockchainService.getProduct(batchId);
+                            
+                            // Get the latest RETAIL_RECEIVE event (most recent received date)
+                            const latestEvent = retailReceiveEvents.reduce((latest, current) => {
+                                return current.timestamp > latest.timestamp ? current : latest;
+                            });
+                            
+                            console.log(`Latest RETAIL_RECEIVE event for ${batchId}:`, latestEvent);
+                            
+                            // Only add one entry per batch (the latest one)
+                            receivedGoodsMap.set(batchId, {
+                                batchId: batchId,
+                                productName: product.productName,
+                                receivedDate: latestEvent.timestamp.toLocaleDateString(),
+                                eventId: latestEvent.eventId
+                            });
+                        }
+                    } catch (error) {
+                        console.warn(`Error getting events for batch ${batchId}:`, error);
+                    }
+                }
+                
+                // Convert Map to Array
+                const receivedGoods = Array.from(receivedGoodsMap.values());
+                console.log('Final received goods array (unique batches only):', receivedGoods);
+
+                if (receivedGoods.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">
+                                <i class="fas fa-qrcode fa-2x mb-2"></i>
+                                <br>No received goods found. Please receive some goods first.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                // Display received goods with QR codes
+                tbody.innerHTML = '';
+                for (const item of receivedGoods) {
+                    const qrUrl = `${window.location.origin}/index.html?batch=${encodeURIComponent(item.batchId)}`;
+                    
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${AgriTraceUtils.sanitizeHtml(item.batchId)}</strong></td>
+                            <td>${AgriTraceUtils.sanitizeHtml(item.productName)}</td>
+                            <td>${item.receivedDate}</td>
+                            <td>
+                                <div class="qr-code-container" style="width: 80px; height: 80px;">
+                                    <canvas id="qr-${item.batchId}" width="80" height="80"></canvas>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="printQRCode('${item.batchId}')" title="Print QR Code">
+                                        <i class="fas fa-qrcode"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="downloadQRCode('${item.batchId}')" title="Download QR Code">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-info" onclick="copyQRUrl('${qrUrl}')" title="Copy URL">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                // Generate QR codes for all items
+                for (const item of receivedGoods) {
+                    await generateQRCode(item.batchId);
+                }
+
+            } catch (error) {
+                console.error('Error loading QR generator:', error);
+                const tbody = document.getElementById('qrGeneratorTableBody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center text-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Error loading QR generator
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // QR Code generation functions
+        async function generateQRCode(batchId) {
+            try {
+                const qrContainer = document.querySelector(`#qr-${batchId}`).parentElement;
+                if (!qrContainer) {
+                    console.error(`QR container not found for batch ${batchId}`);
+                    return;
+                }
+
+                const qrUrl = `${window.location.origin}/index.html?batch=${encodeURIComponent(batchId)}`;
+                
+                // Use online QR service as fallback
+                const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(qrUrl)}`;
+                
+                // Create img element for QR code
+                qrContainer.innerHTML = `
+                    <img src="${qrImageUrl}" 
+                         alt="QR Code for ${batchId}" 
+                         style="width: 80px; height: 80px; border: 1px solid #ddd;"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <canvas id="qr-${batchId}" width="80" height="80" style="display:none; border: 1px solid #ddd;"></canvas>
+                `;
+                
+                // Store QR URL for download functionality
+                qrContainer.dataset.qrUrl = qrUrl;
+                
+            } catch (error) {
+                console.error(`Error in generateQRCode for ${batchId}:`, error);
+                // Fallback: show error text
+                const qrContainer = document.querySelector(`#qr-${batchId}`).parentElement;
+                if (qrContainer) {
+                    qrContainer.innerHTML = `
+                        <div style="width: 80px; height: 80px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; background: #f8f9fa; color: #dc3545; font-size: 8px; text-align: center;">
+                            QR Error
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        async function downloadQRCode(batchId) {
+            try {
+                const qrContainer = document.querySelector(`#qr-${batchId}`).parentElement;
+                const qrImg = qrContainer.querySelector('img');
+                
+                if (!qrImg) {
+                    AgriTraceUtils.showToast('QR Code not found', 'error');
+                    return;
+                }
+
+                // Create download link using the img src
+                const link = document.createElement('a');
+                link.download = `QR_${batchId}.png`;
+                link.href = qrImg.src;
+                link.target = '_blank';
+                
+                // Trigger download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                AgriTraceUtils.showToast(`QR Code for ${batchId} downloaded`, 'success');
+            } catch (error) {
+                console.error('Error downloading QR code:', error);
+                AgriTraceUtils.showToast('Error downloading QR code', 'error');
+            }
+        }
+
+        function copyQRUrl(url) {
+            try {
+                navigator.clipboard.writeText(url).then(() => {
+                    AgriTraceUtils.showToast('QR URL copied to clipboard', 'success');
+                }).catch(err => {
+                    console.error('Error copying to clipboard:', err);
+                    // Fallback: select text
+                    const textArea = document.createElement('textarea');
+                    textArea.value = url;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    AgriTraceUtils.showToast('QR URL copied to clipboard', 'success');
+                });
+            } catch (error) {
+                console.error('Error copying QR URL:', error);
+                AgriTraceUtils.showToast('Error copying QR URL', 'error');
+            }
+        }
+
+        function printQRCode(batchId) {
+            try {
+                const qrContainer = document.querySelector(`#qr-${batchId}`).parentElement;
+                const qrImg = qrContainer.querySelector('img');
+                
+                if (!qrImg) {
+                    AgriTraceUtils.showToast('QR Code not found', 'error');
+                    return;
+                }
+
+                // Create print content
+                const qrUrl = `${window.location.origin}/index.html?batch=${encodeURIComponent(batchId)}`;
+                const printContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>QR Code - ${batchId}</title>
+                        <style>
+                            body { 
+                                font-family: Arial, sans-serif; 
+                                text-align: center; 
+                                padding: 20px;
+                                margin: 0;
+                            }
+                            .qr-container {
+                                display: inline-block;
+                                border: 2px solid #333;
+                                padding: 20px;
+                                margin: 20px;
+                            }
+                            .qr-code {
+                                width: 200px;
+                                height: 200px;
+                                border: 1px solid #ddd;
+                                margin: 10px 0;
+                            }
+                            .batch-id {
+                                font-size: 18px;
+                                font-weight: bold;
+                                margin: 10px 0;
+                            }
+                            .url {
+                                font-size: 12px;
+                                color: #666;
+                                word-break: break-all;
+                                margin: 10px 0;
+                            }
+                            .instructions {
+                                font-size: 14px;
+                                margin: 20px 0;
+                                text-align: left;
+                                max-width: 400px;
+                                margin-left: auto;
+                                margin-right: auto;
+                            }
+                            @media print {
+                                body { margin: 0; padding: 10px; }
+                                .qr-container { border: 2px solid #000; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="qr-container">
+                            <div class="batch-id">Batch ID: ${batchId}</div>
+                            <img src="${qrImg.src}" class="qr-code" alt="QR Code for ${batchId}">
+                            <div class="url">URL: ${qrUrl}</div>
+                        </div>
+                        <div class="instructions">
+                            <h3>Hướng dẫn sử dụng:</h3>
+                            <ol>
+                                <li>Quét mã QR bằng điện thoại</li>
+                                <li>Hoặc truy cập URL bên trên</li>
+                                <li>Xem thông tin chi tiết sản phẩm</li>
+                                <li>Theo dõi chuỗi cung ứng từ farm đến retail</li>
+                            </ol>
+                        </div>
+                    </body>
+                    </html>
+                `;
+
+                // Open print window
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(printContent);
+                printWindow.document.close();
+                
+                // Wait for image to load then print
+                printWindow.onload = function() {
+                    setTimeout(() => {
+                        printWindow.print();
+                        printWindow.close();
+                    }, 500);
+                };
+                
+                AgriTraceUtils.showToast(`Preparing QR code print for ${batchId}`, 'info');
+                
+            } catch (error) {
+                console.error('Error printing QR code:', error);
+                AgriTraceUtils.showToast('Error printing QR code', 'error');
+            }
+        }
+
+        function openReceiveGoodsModal() {
+            const modal = new bootstrap.Modal(document.getElementById('receiveGoodsModal'));
+            modal.show();
+        }
+
+        function openRecordSaleModal() {
+            const modal = new bootstrap.Modal(document.getElementById('recordSaleModal'));
+            modal.show();
+        }
+
+        async function openQRScanner(targetInput = null) {
+            try {
+                // Check camera availability
+                let isAvailable = false;
+                try {
+                    isAvailable = await qrScanner.isCameraAvailable();
+                } catch (error) {
+                    console.warn('Error checking camera availability:', error);
+                    if (typeof QrScanner !== 'undefined' && QrScanner.hasCamera) {
+                        isAvailable = await QrScanner.hasCamera();
+                    } else {
+                        isAvailable = true; // Assume camera is available
+                    }
+                }
+                
+                if (!isAvailable) {
+                    if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+                        const useFileUpload = confirm('Camera requires HTTPS or localhost.\n\nClick OK to use file upload instead of camera.\nClick Cancel to see HTTPS setup instructions.');
+                        
+                        if (useFileUpload) {
+                            openQRFileUpload(targetInput);
+                            return;
+                        } else {
+                            const message = 'To use camera, please:\n\n1. Use https://supplychain.test instead of http://supplychain.test\n2. Or access via localhost: http://localhost/supplychain\n\nThis is a browser security requirement for camera access.';
+                            alert(message);
+                            return;
+                        }
+                    }
+                }
+
+                // Show modal
+                const modal = new bootstrap.Modal(document.getElementById('qrScannerModal'));
+                modal.show();
+
+                // Initialize scanner
+                const video = document.getElementById('scannerVideo');
+                if (!video) {
+                    throw new Error('Video element not found');
+                }
+                
+                try {
+                    await qrScanner.init('scannerVideo');
+                    await qrScanner.start();
+                    
+                    // Set up success callback
+                    qrScanner.onScanSuccess = (data) => {
+                        handleQRScanSuccess(data, targetInput);
+                        modal.hide();
+                    };
+                } catch (error) {
+                    console.error('Error starting QR scanner:', error);
+                    AgriTraceUtils.showToast('Error starting camera: ' + error.message, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error opening QR scanner:', error);
+                AgriTraceUtils.showToast('Failed to open camera', 'error');
+            }
+        }
+
+        function openQRFileUpload(targetInput = null) {
+            try {
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = 'image/*';
+                fileInput.style.display = 'none';
+                
+                fileInput.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        processQRImage(file, targetInput);
+                    }
+                });
+                
+                document.body.appendChild(fileInput);
+                fileInput.click();
+                document.body.removeChild(fileInput);
+                
+            } catch (error) {
+                console.error('Error opening file upload:', error);
+                AgriTraceUtils.showToast('Error opening file upload', 'error');
+            }
+        }
+
+        async function processQRImage(file, targetInput) {
+            try {
+                AgriTraceUtils.showToast('Processing QR code image...', 'info');
+                
+                const img = new Image();
+                img.onload = () => {
+                    if (typeof QrScanner !== 'undefined') {
+                        QrScanner.scanImage(img)
+                            .then(result => {
+                                handleQRScanSuccess(result, targetInput);
+                                AgriTraceUtils.showToast('QR code detected successfully!', 'success');
+                            })
+                            .catch(error => {
+                                console.error('Error scanning QR from image:', error);
+                                AgriTraceUtils.showToast('No QR code found in image', 'error');
+                            });
+                    } else {
+                        AgriTraceUtils.showToast('QR scanner library not available', 'error');
+                    }
+                };
+                
+                img.onerror = () => {
+                    AgriTraceUtils.showToast('Error loading image', 'error');
+                };
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                
+            } catch (error) {
+                console.error('Error processing QR image:', error);
+                AgriTraceUtils.showToast('Error processing image', 'error');
+            }
+        }
+
+        function handleQRScanSuccess(data, targetInput = null) {
+            try {
+                const qrData = data.data || data;
+                
+                // Validate QR code data
+                if (!qrData || typeof qrData !== 'string') {
+                    AgriTraceUtils.showToast('Invalid QR code format', 'warning');
+                    return;
+                }
+
+                // Extract batch ID
+                let batchId = qrData;
+                if (qrData.includes('index.html?batch=')) {
+                    const url = new URL(qrData);
+                    batchId = url.searchParams.get('batch');
+                }
+                
+                // Update target input if specified
+                if (targetInput && batchId) {
+                    const input = document.getElementById(targetInput);
+                    if (input) {
+                        input.value = batchId;
+                        AgriTraceUtils.showToast(`Batch ID ${batchId} scanned successfully!`, 'success');
+                        console.log(`Updated ${targetInput} with batch ID: ${batchId}`);
+                    } else {
+                        console.error(`Element with ID '${targetInput}' not found`);
+                    }
+                }
+                
+                // Show result
+                const resultDiv = document.getElementById('scannerResult');
+                const batchIdSpan = document.getElementById('scannedBatchId');
+                
+                if (resultDiv && batchIdSpan) {
+                    batchIdSpan.textContent = batchId;
+                    resultDiv.classList.remove('d-none');
+                }
+                
+            } catch (error) {
+                console.error('Error handling QR scan success:', error);
+                AgriTraceUtils.showToast('Error processing QR code', 'error');
+            }
+        }
+
+        async function handleReceiveGoods(event) {
+            event.preventDefault();
+            
+            try {
+                // Ensure blockchain service is initialized and connected
+                if (!retailerBlockchainService) {
+                    retailerBlockchainService = new BlockchainService();
+                }
+                
+                if (!retailerBlockchainService.isConnected()) {
+                    await retailerBlockchainService.connectWallet();
+                    await loadUserInfo();
+                }
+
+                const formData = getReceiveGoodsFormData();
+                
+                // Validate form data
+                if (!formData.batchId || !formData.quantity || !formData.supplier || !formData.receivedDate) {
+                    AgriTraceUtils.showToast('Please fill in all required fields', 'error');
+                    return;
+                }
+
+                // Upload documents to IPFS if any
+                let ipfsHash = '';
+                if (formData.documents && formData.documents.length > 0) {
+                    AgriTraceUtils.showToast('Uploading documents to IPFS...', 'info');
+                    const hashes = await retailerIPFSService.uploadMultiple(Array.from(formData.documents));
+                    
+                    // Create metadata
+                    const metadata = {
+                        type: 'retail_receive',
+                        batchId: formData.batchId,
+                        quantity: formData.quantity,
+                        supplier: formData.supplier,
+                        receivedDate: formData.receivedDate,
+                        storageLocation: formData.storageLocation,
+                        qualityNotes: formData.qualityNotes,
+                        files: hashes.map((hash, index) => ({
+                            hash: hash,
+                            name: formData.documents[index].name,
+                            type: formData.documents[index].type
+                        })),
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    ipfsHash = await retailerIPFSService.uploadJSON(metadata);
+                    AgriTraceUtils.showToast('Documents uploaded successfully!', 'success');
+                }
+
+                // Create notes for blockchain
+                const notes = `Received ${formData.quantity} units from ${formData.supplier} on ${formData.receivedDate}. Storage: ${formData.storageLocation || 'Not specified'}. Quality: ${formData.qualityNotes || 'Good condition'}.${ipfsHash ? ` Documents: ${ipfsHash}` : ''}`;
+
+                // Add event to blockchain
+                AgriTraceUtils.showToast('Recording receive event on blockchain...', 'info');
+                
+                const eventData = {
+                    batchId: formData.batchId,
+                    eventType: 'RETAIL_RECEIVE', // This should match the smart contract enum
+                    location: formData.storageLocation || 'Retail Store',
+                    ipfsHash: ipfsHash,
+                    notes: notes
+                };
+
+                await retailerBlockchainService.addEvent(
+                    eventData.batchId,
+                    'RETAIL_RECEIVE', // Event type as string
+                    eventData.location,
+                    eventData.ipfsHash,
+                    eventData.notes
+                );
+
+                AgriTraceUtils.showToast('Goods received successfully!', 'success');
+                
+                // Close modal and refresh data
+                const modal = bootstrap.Modal.getInstance(document.getElementById('receiveGoodsModal'));
+                modal.hide();
+                
+                // Reset form
+                document.getElementById('receiveGoodsForm').reset();
+                
+                // Refresh received goods list
+                await loadReceivedGoods();
+                await loadOverviewData();
+
+            } catch (error) {
+                console.error('Error receiving goods:', error);
+                AgriTraceUtils.showToast('Error receiving goods: ' + error.message, 'error');
+            }
+        }
+
+        async function handleRecordSale(event) {
+            event.preventDefault();
+            
+            try {
+                // Ensure blockchain service is initialized and connected
+                if (!retailerBlockchainService) {
+                    retailerBlockchainService = new BlockchainService();
+                }
+                
+                if (!retailerBlockchainService.isConnected()) {
+                    await retailerBlockchainService.connectWallet();
+                    await loadUserInfo();
+                }
+
+                const formData = getRecordSaleFormData();
+                
+                // Validate form data
+                if (!formData.batchId || !formData.quantity || !formData.salePrice || !formData.saleDate || !formData.customerName) {
+                    AgriTraceUtils.showToast('Please fill in all required fields', 'error');
+                    return;
+                }
+
+                // Upload documents to IPFS if any
+                let ipfsHash = '';
+                if (formData.documents && formData.documents.length > 0) {
+                    AgriTraceUtils.showToast('Uploading sale documents to IPFS...', 'info');
+                    const hashes = await retailerIPFSService.uploadMultiple(Array.from(formData.documents));
+                    
+                    // Create metadata
+                    const metadata = {
+                        type: 'retail_sale',
+                        batchId: formData.batchId,
+                        quantity: formData.quantity,
+                        salePrice: formData.salePrice,
+                        customerName: formData.customerName,
+                        customerEmail: formData.customerEmail,
+                        saleDate: formData.saleDate,
+                        saleNotes: formData.saleNotes,
+                        files: hashes.map((hash, index) => ({
+                            hash: hash,
+                            name: formData.documents[index].name,
+                            type: formData.documents[index].type
+                        })),
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    ipfsHash = await retailerIPFSService.uploadJSON(metadata);
+                    AgriTraceUtils.showToast('Sale documents uploaded successfully!', 'success');
+                }
+
+                // Create notes for blockchain
+                const notes = `Sold ${formData.quantity} units to ${formData.customerName} for $${formData.salePrice} on ${formData.saleDate}. Customer Email: ${formData.customerEmail || 'Not provided'}. Notes: ${formData.saleNotes || 'No additional notes'}.${ipfsHash ? ` Documents: ${ipfsHash}` : ''}`;
+
+                // Add event to blockchain
+                AgriTraceUtils.showToast('Recording sale event on blockchain...', 'info');
+                
+                await retailerBlockchainService.addEvent(
+                    formData.batchId,
+                    'SALE', // Event type as string
+                    'Retail Store',
+                    ipfsHash,
+                    notes
+                );
+
+                AgriTraceUtils.showToast('Sale recorded successfully!', 'success');
+                
+                // Close modal and refresh data
+                const modal = bootstrap.Modal.getInstance(document.getElementById('recordSaleModal'));
+                modal.hide();
+                
+                // Reset form
+                document.getElementById('recordSaleForm').reset();
+                
+                // Refresh sales records and overview
+                await loadSalesRecords();
+                await loadOverviewData();
+
+            } catch (error) {
+                console.error('Error recording sale:', error);
+                AgriTraceUtils.showToast('Error recording sale: ' + error.message, 'error');
+            }
+        }
+
+        async function handleProfileUpdate(event) {
+            event.preventDefault();
+            
+            try {
+                AgriTraceUtils.showToast('Profile update feature coming soon!', 'info');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                AgriTraceUtils.showToast('Error updating profile: ' + error.message, 'error');
+            }
+        }
+
+        function getReceiveGoodsFormData() {
+            return {
+                batchId: document.getElementById('batchId').value,
+                quantity: document.getElementById('quantity').value,
+                supplier: document.getElementById('supplier').value,
+                receivedDate: document.getElementById('receivedDate').value,
+                storageLocation: document.getElementById('storageLocation').value,
+                qualityNotes: document.getElementById('qualityNotes').value,
+                documents: document.getElementById('documents').files
+            };
+        }
+
+        function getRecordSaleFormData() {
+            return {
+                batchId: document.getElementById('saleBatchId').value,
+                quantity: document.getElementById('saleQuantity').value,
+                salePrice: document.getElementById('salePrice').value,
+                saleDate: document.getElementById('saleDate').value,
+                customerName: document.getElementById('customerName').value,
+                customerEmail: document.getElementById('customerEmail').value,
+                saleNotes: document.getElementById('saleNotes').value,
+                documents: document.getElementById('saleDocuments').files
+            };
+        }
+
+        async function viewBatchDetails(batchId) {
+            try {
+                console.log('Loading batch details for:', batchId);
+                
+                // Ensure blockchain service is initialized
+                if (!retailerBlockchainService) {
+                    retailerBlockchainService = new BlockchainService();
+                }
+                
+                if (!retailerBlockchainService.isConnected()) {
+                    AgriTraceUtils.showToast('Please connect your wallet first', 'error');
+                    return;
+                }
+
+                // Show loading state
+                const modal = new bootstrap.Modal(document.getElementById('batchDetailsModal'));
+                const content = document.getElementById('batchDetailsContent');
+                content.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading batch details...</p>
+                    </div>
+                `;
+                modal.show();
+
+                // Load product details
+                const product = await retailerBlockchainService.getProduct(batchId);
+                console.log('Product details:', product);
+
+                // Load events
+                const events = await retailerBlockchainService.getEvents(batchId);
+                console.log('Events for batch:', events);
+
+                // Format events timeline
+                const eventsTimeline = events.map(event => {
+                    const eventDate = new Date(event.timestamp * 1000);
+                    const eventTypeNames = {
+                        0: 'Harvest',
+                        1: 'Processing', 
+                        2: 'Transport Start',
+                        3: 'Transport End',
+                        4: 'Warehouse In',
+                        5: 'Warehouse Out',
+                        6: 'Retail Receive',
+                        7: 'Sale'
+                    };
+                    
+                    return {
+                        ...event,
+                        eventTypeName: eventTypeNames[event.eventType] || eventTypeNames[event.eventTypeValue] || 'Unknown',
+                        formattedDate: eventDate.toLocaleString()
+                    };
+                }).sort((a, b) => b.timestamp - a.timestamp);
+
+                // Generate content
+                content.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="card-title mb-0">
+                                        <i class="fas fa-box me-2"></i>Product Information
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td><strong>Batch ID:</strong></td>
+                                            <td><code>${AgriTraceUtils.sanitizeHtml(product.batchId)}</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Product Name:</strong></td>
+                                            <td>${AgriTraceUtils.sanitizeHtml(product.productName)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Category:</strong></td>
+                                            <td>${AgriTraceUtils.sanitizeHtml(product.category)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Quantity:</strong></td>
+                                            <td>${product.quantity} units</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Current Owner:</strong></td>
+                                            <td><code>${AgriTraceUtils.sanitizeHtml(product.currentOwner)}</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Created Date:</strong></td>
+                                            <td>${new Date(product.timestamp * 1000).toLocaleDateString()}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="card-title mb-0">
+                                        <i class="fas fa-chart-line me-2"></i>Supply Chain Timeline
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="timeline">
+                                        ${eventsTimeline.map(event => `
+                                            <div class="timeline-item ${event.eventTypeName === 'Retail Receive' ? 'active' : ''}">
+                                                <div class="timeline-marker"></div>
+                                                <div class="timeline-content">
+                                                    <div class="d-flex justify-content-between">
+                                                        <strong>${event.eventTypeName}</strong>
+                                                        <small class="text-muted">${event.formattedDate}</small>
+                                                    </div>
+                                                    <div class="mt-1">
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-map-marker-alt me-1"></i>${AgriTraceUtils.sanitizeHtml(event.location)}
+                                                        </small>
+                                                    </div>
+                                                    ${event.notes ? `
+                                                        <div class="mt-2">
+                                                            <small>${AgriTraceUtils.sanitizeHtml(event.notes.substring(0, 100))}${event.notes.length > 100 ? '...' : ''}</small>
+                                                        </div>
+                                                    ` : ''}
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Error loading batch details:', error);
+                const content = document.getElementById('batchDetailsContent');
+                content.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Error loading batch details: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function viewSaleDetails(saleId) {
+            try {
+                console.log('Loading sale details for:', saleId);
+                
+                // Extract batch ID from sale ID (format: SALE-{eventId})
+                const eventId = saleId.replace('SALE-', '');
+                
+                // Ensure blockchain service is initialized
+                if (!retailerBlockchainService) {
+                    retailerBlockchainService = new BlockchainService();
+                }
+                
+                if (!retailerBlockchainService.isConnected()) {
+                    AgriTraceUtils.showToast('Please connect your wallet first', 'error');
+                    return;
+                }
+
+                // Show loading state
+                const modal = new bootstrap.Modal(document.getElementById('saleDetailsModal'));
+                const content = document.getElementById('saleDetailsContent');
+                content.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading sale details...</p>
+                    </div>
+                `;
+                modal.show();
+
+                // Find the sale event by searching through all batches
+                let saleEvent = null;
+                let product = null;
+                
+                const batchIds = await retailerBlockchainService.getAllBatchIds();
+                
+                for (const batchId of batchIds) {
+                    try {
+                        const events = await retailerBlockchainService.getEvents(batchId);
+                        const saleEvents = events.filter(event => 
+                            (event.eventType === 'SALE' || event.eventTypeValue === 7) && 
+                            event.eventId.toString() === eventId
+                        );
+                        
+                        if (saleEvents.length > 0) {
+                            saleEvent = saleEvents[0];
+                            product = await retailerBlockchainService.getProduct(batchId);
+                            break;
+                        }
+                    } catch (error) {
+                        console.warn(`Error checking events for ${batchId}:`, error);
+                    }
+                }
+
+                if (!saleEvent || !product) {
+                    throw new Error('Sale event not found');
+                }
+
+                console.log('Sale event details:', saleEvent);
+                console.log('Product details:', product);
+
+                // Parse sale details from notes
+                const notes = saleEvent.notes || '';
+                const quantityMatch = notes.match(/Sold (\d+) units/i);
+                const priceMatch = notes.match(/\$([\d.]+)/i);
+                const customerMatch = notes.match(/to ([^,]+)/i);
+                const emailMatch = notes.match(/Customer Email: ([^,]+)/i);
+                const saleNotesMatch = notes.match(/Notes: ([^.]+)/i);
+
+                const saleDetails = {
+                    quantity: quantityMatch ? quantityMatch[1] : 'Unknown',
+                    price: priceMatch ? '$' + priceMatch[1] : 'Unknown',
+                    customer: customerMatch ? customerMatch[1].trim() : 'Unknown Customer',
+                    email: emailMatch ? emailMatch[1].trim() : 'Not provided',
+                    notes: saleNotesMatch ? saleNotesMatch[1].trim() : 'No additional notes'
+                };
+
+                // Extract IPFS hash from notes if present
+                const ipfsHashMatch = saleEvent.notes.match(/Documents: (Qm[a-zA-Z0-9]{44})/);
+                const ipfsHash = ipfsHashMatch ? ipfsHashMatch[1] : null;
+
+                // Generate content
+                content.innerHTML = `
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="card-title mb-0">
+                                        <i class="fas fa-shopping-cart me-2"></i>Sale Information
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Sale ID</label>
+                                        <div><code class="small">${AgriTraceUtils.sanitizeHtml(saleId)}</code></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Batch ID</label>
+                                        <div><code class="small">${AgriTraceUtils.sanitizeHtml(product.batchId)}</code></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Product</label>
+                                        <div>${AgriTraceUtils.sanitizeHtml(product.productName)}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Quantity Sold</label>
+                                        <div><span class="badge bg-primary">${saleDetails.quantity} units</span></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Sale Price</label>
+                                        <div><span class="h5 text-success mb-0">${saleDetails.price}</span></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Sale Date</label>
+                                        <div><i class="fas fa-calendar me-1"></i>${new Date(saleEvent.timestamp * 1000).toLocaleDateString()}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Sale Time</label>
+                                        <div><i class="fas fa-clock me-1"></i>${new Date(saleEvent.timestamp * 1000).toLocaleTimeString()}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="card-title mb-0">
+                                        <i class="fas fa-user me-2"></i>Customer Information
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Customer Name</label>
+                                        <div class="text-break">${AgriTraceUtils.sanitizeHtml(saleDetails.customer)}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Email</label>
+                                        <div class="text-break">${AgriTraceUtils.sanitizeHtml(saleDetails.email)}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Location</label>
+                                        <div><i class="fas fa-map-marker-alt me-1"></i>${AgriTraceUtils.sanitizeHtml(saleEvent.location)}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Sale Notes</label>
+                                        <div class="text-break small">${AgriTraceUtils.sanitizeHtml(saleDetails.notes)}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="card-title mb-0">
+                                        <i class="fas fa-file-alt me-2"></i>Documents & Actions
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    ${ipfsHash ? `
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Sale Documents</label>
+                                            <div class="mb-2">
+                                                <code class="small text-break">${ipfsHash}</code>
+                                            </div>
+                                            <div class="d-grid gap-2">
+                                                <button class="btn btn-outline-primary btn-sm" onclick="viewSaleDocuments('${ipfsHash}')">
+                                                    <i class="fas fa-eye me-1"></i>View Documents
+                                                </button>
+                                                <button class="btn btn-outline-secondary btn-sm" onclick="copyToClipboard('${ipfsHash}')">
+                                                    <i class="fas fa-copy me-1"></i>Copy IPFS Hash
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ` : `
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Sale Documents</label>
+                                            <div class="text-muted">
+                                                <i class="fas fa-info-circle me-1"></i>No documents attached to this sale
+                                            </div>
+                                        </div>
+                                    `}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="card-title mb-0">
+                                        <i class="fas fa-file-alt me-2"></i>Full Sale Notes
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="bg-light p-3 rounded">
+                                        <pre class="mb-0 small text-break">${AgriTraceUtils.sanitizeHtml(saleEvent.notes)}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Error loading sale details:', error);
+                const content = document.getElementById('saleDetailsContent');
+                content.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Error loading sale details: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function viewSaleDocuments(ipfsHash) {
+            try {
+                console.log('Loading sale documents from IPFS:', ipfsHash);
+                
+                if (!retailerIPFSService) {
+                    retailerIPFSService = new IPFSService();
+                }
+
+                // Show loading
+                AgriTraceUtils.showToast('Loading documents from IPFS...', 'info');
+
+                // Get metadata from IPFS
+                const metadata = await retailerIPFSService.getJSON(ipfsHash);
+                console.log('Documents metadata:', metadata);
+
+                // Create document viewer modal
+                const modalHtml = `
+                    <div class="modal fade" id="documentViewerModal" tabindex="-1">
+                        <div class="modal-dialog modal-xl">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">
+                                        <i class="fas fa-file-alt me-2"></i>Sale Documents
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h6 class="card-title mb-0">
+                                                        <i class="fas fa-info-circle me-2"></i>Document Information
+                                                    </h6>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="mb-2">
+                                                        <strong>Type:</strong> ${metadata.type || 'Sale Documents'}
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <strong>Upload Date:</strong> ${new Date(metadata.timestamp).toLocaleString()}
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <strong>Files Count:</strong> ${metadata.files ? metadata.files.length : 0}
+                                                    </div>
+                                                    ${metadata.batchId ? `
+                                                        <div class="mb-2">
+                                                            <strong>Batch ID:</strong> <code>${metadata.batchId}</code>
+                                                        </div>
+                                                    ` : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h6 class="card-title mb-0">
+                                                        <i class="fas fa-folder me-2"></i>Document Files
+                                                    </h6>
+                                                </div>
+                                                <div class="card-body">
+                                                    ${metadata.files && metadata.files.length > 0 ? `
+                                                        <div class="list-group">
+                                                            ${metadata.files.map((file, index) => `
+                                                                <div class="list-group-item">
+                                                                    <div class="d-flex justify-content-between align-items-center">
+                                                                        <div>
+                                                                            <i class="fas fa-file me-2"></i>
+                                                                            <strong>${file.name}</strong>
+                                                                            <small class="text-muted">(${file.type})</small>
+                                                                        </div>
+                                                                        <div class="btn-group" role="group">
+                                                                            <button class="btn btn-sm btn-outline-primary" onclick="viewDocument('${file.hash}', '${file.name}')" title="View in IPFS Gateway">
+                                                                                <i class="fas fa-external-link-alt"></i>
+                                                                            </button>
+                                                                            <button class="btn btn-sm btn-outline-info" onclick="viewDocumentLocal('${file.hash}', '${file.name}')" title="View Local Copy">
+                                                                                <i class="fas fa-eye"></i>
+                                                                            </button>
+                                                                            <button class="btn btn-sm btn-outline-secondary" onclick="downloadDocument('${file.hash}', '${file.name}')" title="Download File">
+                                                                                <i class="fas fa-download"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            `).join('')}
+                                                        </div>
+                                                    ` : `
+                                                        <div class="text-center text-muted py-4">
+                                                            <i class="fas fa-folder-open fa-3x mb-3"></i>
+                                                            <p>No documents found</p>
+                                                        </div>
+                                                    `}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Remove existing modal if any
+                const existingModal = document.getElementById('documentViewerModal');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+
+                // Add modal to body
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+                // Show modal
+                const modal = new bootstrap.Modal(document.getElementById('documentViewerModal'));
+                modal.show();
+
+                // Clean up when modal is hidden
+                document.getElementById('documentViewerModal').addEventListener('hidden.bs.modal', function() {
+                    this.remove();
+                });
+
+            } catch (error) {
+                console.error('Error loading sale documents:', error);
+                AgriTraceUtils.showToast('Error loading documents: ' + error.message, 'error');
+            }
+        }
+
+        async function viewDocument(ipfsHash, fileName) {
+            try {
+                console.log('Viewing document:', fileName, ipfsHash);
+                
+                if (!retailerIPFSService) {
+                    retailerIPFSService = new IPFSService();
+                }
+
+                // Get IPFS gateway URL directly
+                const ipfsUrl = retailerIPFSService.getIPFSUrl(ipfsHash);
+                console.log('Opening IPFS URL:', ipfsUrl);
+                
+                // Open IPFS URL directly in new tab
+                window.open(ipfsUrl, '_blank');
+
+            } catch (error) {
+                console.error('Error viewing document:', error);
+                AgriTraceUtils.showToast('Error viewing document: ' + error.message, 'error');
+            }
+        }
+
+        async function viewDocumentLocal(ipfsHash, fileName) {
+            try {
+                console.log('Viewing document locally:', fileName, ipfsHash);
+                
+                if (!retailerIPFSService) {
+                    retailerIPFSService = new IPFSService();
+                }
+
+                // Show loading
+                AgriTraceUtils.showToast('Loading document for local viewing...', 'info');
+
+                // Get file from IPFS
+                const fileData = await retailerIPFSService.getFile(ipfsHash);
+                
+                // Determine file type
+                const fileExtension = fileName.split('.').pop().toLowerCase();
+                let mimeType = 'application/octet-stream';
+                
+                switch(fileExtension) {
+                    case 'pdf':
+                        mimeType = 'application/pdf';
+                        break;
+                    case 'jpg':
+                    case 'jpeg':
+                        mimeType = 'image/jpeg';
+                        break;
+                    case 'png':
+                        mimeType = 'image/png';
+                        break;
+                    case 'txt':
+                        mimeType = 'text/plain';
+                        break;
+                    case 'json':
+                        mimeType = 'application/json';
+                        break;
+                }
+                
+                // Create blob URL for viewing
+                const blob = new Blob([fileData], { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                
+                console.log('Opening local blob URL:', url);
+                
+                // Open in new tab
+                window.open(url, '_blank');
+                
+                // Clean up URL after some time (optional)
+                setTimeout(() => URL.revokeObjectURL(url), 300000); // 5 minutes
+
+            } catch (error) {
+                console.error('Error viewing document locally:', error);
+                AgriTraceUtils.showToast('Error viewing document locally: ' + error.message, 'error');
+            }
+        }
+
+        async function downloadDocument(ipfsHash, fileName) {
+            try {
+                console.log('Downloading document:', fileName, ipfsHash);
+                
+                if (!retailerIPFSService) {
+                    retailerIPFSService = new IPFSService();
+                }
+
+                // Get IPFS gateway URL directly
+                const ipfsUrl = retailerIPFSService.getIPFSUrl(ipfsHash);
+                console.log('Downloading from IPFS URL:', ipfsUrl);
+                
+                // Create download link with IPFS URL
+                const link = document.createElement('a');
+                link.href = ipfsUrl;
+                link.download = fileName;
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                AgriTraceUtils.showToast('Document download started!', 'success');
+
+            } catch (error) {
+                console.error('Error downloading document:', error);
+                AgriTraceUtils.showToast('Error downloading document: ' + error.message, 'error');
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                AgriTraceUtils.showToast('IPFS hash copied to clipboard!', 'success');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                AgriTraceUtils.showToast('Failed to copy to clipboard', 'error');
+            });
+        }
+
+
+        function viewCustomerDetails(customerId) {
+            AgriTraceUtils.showToast(`Viewing details for customer ${customerId}`, 'info');
+            // Implementation for viewing customer details
+        }
+    </script>
+</body>
+</html>
